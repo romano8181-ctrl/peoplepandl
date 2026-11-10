@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>People & P&L</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Концепт: операційний центр людей — світла «папірна» поверхня, щільна сітка метрик, статуси кольором + іконкою + текстом. */
+:root{
+  --bg:#f3f5f2; --card:#ffffff; --ink:#14201c; --muted:#5a6660; --faint:#8b958f; --line:#dde2dd; --soft:#eef1ed;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --g1:#bcd7f6; --g2:#7fb0ea; --g3:#2a78d6; --g4:#103a74;
+  --good:#1b7f55; --warn:#a86b00; --bad:#c93434; --good-bg:#e3f3ea; --warn-bg:#fbf0d9; --bad-bg:#fbe5e2;
+  --other:#9aa6b4; --grid:#e6e9e5;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif; --head:'Manrope','Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#101412; --card:#181e1b; --ink:#eceeea; --muted:#a3ada7; --faint:#77817b; --line:#2a312d; --soft:#1f2623;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --g1:#27476f; --g2:#3a6fb3; --g3:#5a9bee; --g4:#b4d3f8;
+  --good:#3ab784; --warn:#e0a030; --bad:#ec6a6a; --good-bg:#16302a; --warn-bg:#352c14; --bad-bg:#3a1f1f;
+  --other:#6c7a8a; --grid:#242b27;}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#101412; --card:#181e1b; --ink:#eceeea; --muted:#a3ada7; --faint:#77817b; --line:#2a312d; --soft:#1f2623;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --g1:#27476f; --g2:#3a6fb3; --g3:#5a9bee; --g4:#b4d3f8;
+  --good:#3ab784; --warn:#e0a030; --bad:#ec6a6a; --good-bg:#16302a; --warn-bg:#352c14; --bad-bg:#3a1f1f;
+  --other:#6c7a8a; --grid:#242b27;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45;padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto;padding-block:16px 40px}
+h1,h2,h3{font-family:var(--head);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px;border-radius:4px}
+.hdr{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.hdr h1{font-size:22px;font-weight:800}
+.hdr .sub{color:var(--muted);font-size:13px;margin-top:2px}
+.hdr-r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13px}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.pill.on .dot{background:var(--good);box-shadow:0 0 0 0 var(--good);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.pill.on .dot{animation:none}}
+.sel{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 28px 6px 10px;min-height:34px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar-row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:4px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:8px 14px;border-radius:8px;font-weight:700;font-family:var(--head);cursor:pointer;color:var(--muted);white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:transparent;padding:6px 11px;cursor:pointer;font-weight:600;color:var(--muted);min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--soft);color:var(--ink);box-shadow:inset 0 -2px 0 var(--s1)}
+.reset{border:0;background:transparent;color:var(--s1);cursor:pointer;font-weight:600;padding:6px}
+@media (max-width:760px){.bar{position:static}body::before{display:none}}
+.grid{display:grid;gap:12px}
+.tiles{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 12px 8px;position:relative;min-width:0;display:flex;flex-direction:column;gap:2px}
+.t-top{display:flex;justify-content:space-between;gap:6px;align-items:flex-start}
+.t-label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.01em}
+.t-val{font-family:var(--head);font-weight:800;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.t-val small{font-size:15px;font-weight:700;margin-left:2px;color:var(--muted)}
+.t-sub{font-size:12px;color:var(--muted)}
+.chip{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.chip.good{background:var(--good-bg);color:var(--good)}.chip.warn{background:var(--warn-bg);color:var(--warn)}.chip.bad{background:var(--bad-bg);color:var(--bad)}.chip.mute{background:var(--soft);color:var(--muted)}
+.delta.good{color:var(--good)}.delta.bad{color:var(--bad)}.delta.mute{color:var(--muted)}.delta{font-weight:700}
+.spark{position:relative;height:34px;margin-top:6px}
+.spark svg{width:100%;height:34px;display:block}
+.spark i{position:absolute;right:-3px;width:7px;height:7px;border-radius:50%;margin-top:-3px;border:2px solid var(--card);background:var(--s1);box-sizing:content-box;margin-right:-2px}
+.info{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--faint);color:var(--faint);font-size:10px;font-weight:700;cursor:help;margin-left:4px;vertical-align:1px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 14px 10px;min-width:0}
+.card h2{font-size:15px;font-weight:800}
+.card .cap{color:var(--muted);font-size:12.5px;margin:2px 0 8px}
+.card-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.row2{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.row3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.row2e{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.chart{width:100%;min-height:120px;position:relative}
+.chart svg{display:block;max-width:100%}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--font);font-variant-numeric:tabular-nums}
+.chart .lbl{fill:var(--ink);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-bottom:4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legend i.ln{height:3px;width:14px;border-radius:2px}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:var(--bg);padding:7px 10px;border-radius:8px;font-size:12px;line-height:1.4;max-width:280px;box-shadow:0 4px 16px rgba(0,0,0,.25);display:none}
+#tip b{font-weight:700}#tip .tr{display:flex;justify-content:space-between;gap:14px}#tip .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+.ins{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ins li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:13px}
+.ins .ic{font-weight:800}
+.ins .ic.bad{color:var(--bad)}.ins .ic.warn{color:var(--warn)}.ins .ic.good{color:var(--good)}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;max-height:320px;overflow:auto}
+.feed li{padding:7px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:20px 1fr auto;gap:8px;font-size:13px}
+.feed li:first-child{border-top:0}
+.feed li.new{animation:fresh 1.6s ease-out}
+@keyframes fresh{from{background:color-mix(in srgb,var(--s1) 16%,transparent)}to{background:transparent}}
+.feed .s{color:var(--muted);font-size:12px}.feed .ago{color:var(--faint);font-size:11.5px;white-space:nowrap}
+.feed .ic{font-weight:800}.ic.exit{color:var(--bad)}.ic.hire{color:var(--good)}.ic.vac{color:var(--s1)}.ic.bench{color:var(--warn)}.ic.proj{color:var(--good)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:11.5px;text-align:left;color:var(--muted);font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right}
+.tw{overflow-x:auto}
+.score{display:inline-block;min-width:34px;text-align:center;font-weight:800;border-radius:6px;padding:1px 6px;font-family:var(--head)}
+.score.hi{background:var(--bad-bg);color:var(--bad)}.score.md{background:var(--warn-bg);color:var(--warn)}.score.lo{background:var(--soft);color:var(--muted)}
+.heat{display:grid;grid-template-columns:112px repeat(4,minmax(0,1fr));gap:4px;font-size:12px}
+.heat .hh{color:var(--muted);font-weight:700;font-size:11.5px;align-self:end;padding:2px 4px}
+.heat .rl{align-self:center;font-weight:700;font-size:12px}
+.hc{border:1px solid var(--line);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;background:var(--card);min-height:52px}
+.hc b{display:block;font-family:var(--head);font-size:15px;font-variant-numeric:tabular-nums}
+.hc span{color:var(--muted);font-size:10.5px}
+.hc[aria-pressed="true"]{outline:2px solid var(--ink)}
+.hb{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(0,2fr) 42px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
+.hb .tr{background:var(--soft);border-radius:4px;height:14px;overflow:hidden}.hb .fl{height:100%;border-radius:0 4px 4px 0;background:var(--s1)}
+.hb .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.note{color:var(--muted);font-size:12px}
+.sl{display:grid;grid-template-columns:minmax(150px,1fr) minmax(120px,2fr) 70px;gap:8px 12px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.sl:first-of-type{border-top:0}
+input[type=range]{width:100%;accent-color:var(--s1)}
+.num{width:64px;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:5px 6px;text-align:right}
+.big{font-family:var(--head);font-weight:800;font-size:26px;letter-spacing:-.02em}
+details summary{cursor:pointer;color:var(--muted);font-size:12.5px;margin-top:6px}
+.foot{margin-top:24px;color:var(--faint);font-size:12px}
+@media (max-width:560px){.sl{grid-template-columns:1fr 70px}.sl input[type=range]{grid-column:1/-1;order:3}.heat{grid-template-columns:70px repeat(4,minmax(0,1fr))}}
+@media (min-width:1000px){.t8{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pill.alarm{border-color:var(--bad);color:var(--bad)}
+.pill[disabled]{cursor:not-allowed}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hdr">
+    <div><h1>People &amp; P&amp;L</h1><div class="sub">IT-сервіс · ~800 осіб · синтетичні дані для прототипу · <span id="upd"></span></div></div>
+    <div class="hdr-r">
+      <button class="pill" id="alerts-btn" aria-label="Відкрити алерти">Алерти</button>
+      <button class="pill on" id="live" aria-label="Увімкнути або призупинити живі події"><span class="dot"></span><span id="live-t">Live</span></button>
+      <label class="note" for="role">Роль</label>
+      <select class="sel" id="role"><option value="hr">HR (повний доступ)</option><option value="dir">Practice Director</option><option value="board">CEO / Board</option><option value="cfo">CFO</option></select>
+      <select class="sel" id="dirp" hidden aria-label="Практика директора"></select>
+    </div>
+  </header>
+  <div class="bar">
+    <div class="bar-row">
+      <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="executive">Executive</button><button class="tab" role="tab" data-tab="turnover">Відтік</button><button class="tab" role="tab" data-tab="cost">Вартість і P&amp;L</button><button class="tab" role="tab" data-tab="bench">Utilization і Bench</button><button class="tab" role="tab" data-tab="hiring">Найм</button><button class="tab" role="tab" data-tab="people">Люди і ризики</button><button class="tab" role="tab" data-tab="alerts">Алерти і дайджест</button><button class="tab" role="tab" data-tab="data">Дані</button></div>
+      <div class="filters">
+        <div class="seg" role="group" aria-label="Період"><button data-period="6">6 міс.</button><button data-period="12">12</button><button data-period="24">24</button><button data-period="36">36</button></div>
+        <select class="sel" id="f-p" aria-label="Практика"></select><select class="sel" id="f-g" aria-label="Грейд"></select><select class="sel" id="f-l" aria-label="Локація"></select>
+        <button class="reset" id="reset" hidden>Скинути фільтри</button>
+      </div>
+    </div>
+  </div>
+  <main id="view"></main>
+  <p class="foot">Усі дані синтетичні. Формули метрик: tooltip «i» на кожній плитці. * — поточний місяць (MTD, run-rate). Ціль turnover ≤15%, utilization 75%, bench ≤8%; time-to-fill ≤45 дн. і regretted ≤6% — припущення.</p>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+'use strict';
+/* ====== Синтетичні дані та розрахунок метрик ======
+   Час у місяцях: 0 = грудень 2022; 47 = листопад 2026; NOW = 10 листопада 2026.
+   Показуємо 36 точок: кінець кожного місяця з грудня 2023 до жовтня 2026 + поточний (MTD). */
+const PRACTICES = ['Engineering', 'QA', 'Data / AI', 'DevOps / Security'];
+const GRADES = ['Jr', 'Mid', 'Sr', 'Lead'];
+const LOCS = ['Київ', 'Львів', 'Дніпро', 'Харків', 'Remote (світ)'];
+const MONTHS = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
+const NOW = 47 + 10 / 30, K = 36, I0 = 12;
+const TARGETS = { turnover: 15, turnoverBad: 18, util: 75, bench: 8, benchBad: 11, ttf: 45, regretted: 6 };
+const CFG = { repl: { Jr: 0.5, Mid: 0.75, Sr: 1.0, Lead: 1.5 } };
+const BASE_SAL = { Jr: 19000, Mid: 33000, Sr: 53000, Lead: 74000 };
+const PRAC_SAL = [1.0, 0.88, 1.12, 1.1];
+const RATE = { Jr: 28, Mid: 40, Sr: 56, Lead: 72 };
+const SKILLS = [
+  ['Java', '.NET', 'React', 'Node.js', 'Kotlin / Android', 'Swift / iOS', 'Go'],
+  ['Test Automation', 'Performance QA', 'Manual QA', 'SDET'],
+  ['Data Engineer', 'ML Engineer', 'Data Analyst', 'MLOps'],
+  ['AWS / DevOps', 'Kubernetes', 'Security Engineer', 'SRE']
+];
+const VOL_REASONS = ['Компенсація', 'Карʼєрний ріст', 'Вигорання / навантаження', 'Відносини з менеджером', 'Релокація / еміграція', 'Інші технології / проєкт', 'Інше'];
+const VOL_W = [0.30, 0.20, 0.14, 0.09, 0.08, 0.11, 0.08];
+const INV_REASONS = ['Performance', 'Скорочення / реорганізація', 'Завершення контракту'];
+const SRC = ['Referral', 'LinkedIn', 'Рекрутингові агенції', 'Career-сайт', 'Boomerang', 'Університети / стажування'];
+const SRC_COST = [1500, 2800, null, 900, 500, 1200];
+const TEAMS = [32, 14, 11, 11], TEAM_CODE = ['ENG', 'QA', 'DATA', 'OPS'];
+const FN = ['Андрій', 'Олег', 'Максим', 'Дмитро', 'Ігор', 'Богдан', 'Тарас', 'Юрій', 'Віктор', 'Назар', 'Олена', 'Марія', 'Наталія', 'Ірина', 'Анна', 'Катерина', 'Оксана', 'Юлія', 'Софія', 'Дарина'];
+const LN = ['Коваленко', 'Шевченко', 'Бондаренко', 'Ткаченко', 'Кравчук', 'Мельничук', 'Савчук', 'Лисенко', 'Мороз', 'Петренко', 'Гончаренко', 'Руденко', 'Поліщук', 'Остапенко', 'Яценко', 'Мазур', 'Клименко', 'Кириленко', 'Захарченко', 'Олійник', 'Романюк', 'Тимошенко', 'Павленко', 'Гриценко'];
+
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function pickW(rnd, w) { let s = 0; for (const x of w) s += x; let r = rnd() * s; for (let i = 0; i < w.length; i++) { r -= w[i]; if (r <= 0) return i; } return w.length - 1; }
+const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const startOf = k => I0 + k;
+const endOf = k => k < K - 1 ? I0 + k + 1 : NOW;
+const ENDS = Array.from({ length: K }, (_, k) => endOf(k));
+function monthInfo(i) { const j = 11 + i; return { m: MONTHS[j % 12], y: 2022 + Math.floor(j / 12) }; }
+function pointLabel(k) { const q = monthInfo(I0 + k); return q.m + ' ' + String(q.y).slice(2) + (k === K - 1 ? ' (MTD)' : ''); }
+const active = (e, t) => e.hire <= t && (e.term == null || e.term > t);
+
+function planAt(t) { return 595 + t / NOW * 225; }
+function targetHC(t) { return planAt(t) - Math.max(0, t - 38) * 1.65; }
+
+function hazard(e, t) {
+  const ten = t - e.hire;
+  let h = 0.0134 * { Jr: 1.05, Mid: 1, Sr: 0.95, Lead: 0.85 }[e.grade] * [1, 1.05, 1.1, 1.05][e.pi];
+  h *= ten < 3 ? 0.8 : ten < 12 ? 1.5 : ten < 24 ? 1.1 : ten < 48 ? 0.8 : 0.65;
+  if (e.gi >= 2) h *= 1 + 0.95 * smooth((t - 36) / 10) * (e.pi >= 2 ? 1.35 : 1);
+  h *= [0.8, 1, 1.2, 1, 0.7, 1][e.si];
+  const cal = (11 + Math.floor(t)) % 12;
+  h *= (cal <= 2) ? 1.2 : cal === 7 ? 1.1 : 1;
+  return h;
+}
+
+let _id = 1000;
+function makeEmp(rnd, hire, over) {
+  const pi = over && over.pi != null ? over.pi : pickW(rnd, [0.47, 0.21, 0.16, 0.16]);
+  const gi = over && over.gi != null ? over.gi : pickW(rnd, hire < 0 ? [0.2, 0.38, 0.32, 0.10] : [0.26, 0.40, 0.27, 0.07]);
+  const li = over && over.li != null ? over.li : pickW(rnd, [0.38, 0.17, 0.10, 0.07, 0.28]);
+  const grade = GRADES[gi];
+  const e = {
+    id: 'E' + (++_id), name: FN[Math.floor(rnd() * FN.length)] + ' ' + LN[Math.floor(rnd() * LN.length)],
+    pi, gi, li, practice: PRACTICES[pi], grade, loc: LOCS[li],
+    salary: Math.round(BASE_SAL[grade] * PRAC_SAL[pi] * (0.9 + 0.2 * rnd()) / 100) * 100,
+    hire, term: null, termType: null, reason: null, perf: 1 + pickW(rnd, [0.03, 0.12, 0.40, 0.31, 0.14]),
+    regretted: false, compa: 0.82 + rnd() * 0.32, raiseM: 2 + rnd() * 28, ot: Math.max(0, Math.round((rnd() * rnd() * 14) * 10) / 10), noVac: Math.floor(rnd() * rnd() * 15),
+    bench: new Uint8Array(K), util: new Float32Array(K)
+  };
+  e.hs = (_id * 2654435761) >>> 0; const h = mulberry32(e.hs);
+  e.skill = SKILLS[pi][Math.floor(h() * SKILLS[pi].length)];
+  e.si = pickW(h, hire < 0 ? [0.25, 0.35, 0.15, 0.15, 0.03, 0.07] : [0.28, 0.32, 0.14, 0.14, 0.04, 0.08]); e.src = SRC[e.si];
+  e.team = pi * 100 + Math.floor(h() * TEAMS[pi]);
+  e.rollOff = h() < 0.18 ? 5 + h() * 100 : null; e.benchW = 0; e.enps = new Int8Array(8).fill(-1);
+  return e;
+}
+
+function terminate(rnd, e, t) {
+  e.term = t;
+  const vol = rnd() < 0.82;
+  e.termType = vol ? 'vol' : 'invol';
+  if (vol) {
+    const w = VOL_W.slice();
+    if (e.gi >= 2 && t > 38) { w[0] += 0.12; w[2] += 0.06; }
+    e.reason = VOL_REASONS[pickW(rnd, w)];
+  } else {
+    e.reason = INV_REASONS[pickW(rnd, [0.55, 0.30, 0.15])];
+    e.perf = 1 + pickW(rnd, [0.35, 0.45, 0.2]);
+  }
+  e.regretted = vol && e.perf >= 4;
+}
+
+function genStates(e, rnd) {
+  let b = null;
+  for (let k = 0; k < K; k++) {
+    if (!active(e, ENDS[k])) { b = null; continue; }
+    if (b === null) b = rnd() < (e.hire >= startOf(k) ? 0.28 : 0.09);
+    else if (b) b = rnd() > 0.38;
+    else b = rnd() < 0.030 * [1, 1.35, 0.7, 0.6][e.pi] * (1 + 0.6 * smooth((k - 18) / 16)) * (((11 + I0 + k) % 12) === 0 ? 1.25 : 1);
+    setUtil(e, k, b, rnd);
+  }
+  if (e.bench[K - 1] && active(e, NOW)) { let j = 0; while (K - 1 - j >= 0 && e.bench[K - 1 - j] && active(e, ENDS[K - 1 - j])) j++; e.benchW = Math.max(0.3, (j - 1) * 4.3 + mulberry32(e.hs ^ 77)() * 4.3); }
+}
+function genSurvey(e) {
+  const h = mulberry32(e.hs ^ 991);
+  for (let q = 0; q < 8; q++) {
+    const t = NOW - 3 * (7 - q); if (!active(e, t) || h() > 0.7) { h(); continue; }
+    let m = 8.6 - (e.ot > 8 ? 1.3 : 0) - (e.compa < 0.92 ? 1 : 0) - (e.noVac > 9 ? 0.8 : 0) - 0.4 * smooth((q - 3) / 4) - (e.gi >= 2 && e.pi >= 2 ? 0.9 * smooth((q - 3) / 4) : 0);
+    e.enps[q] = Math.max(0, Math.min(10, Math.round(m + (h() + h() + h() - 1.5) * 2.4)));
+  }
+}
+function setUtil(e, k, b, rnd) {
+  e.bench[k] = b ? 1 : 0;
+  if (b) { e.util[k] = 0; return; }
+  const base = [0.88, 0.9, 0.86, 0.7][e.gi] + (rnd() - 0.5) * 0.12 - 0.06 * smooth((k - 20) / 15);
+  e.util[k] = Math.max(0.3, Math.min(0.98, base));
+}
+
+function makeVac(rnd, openM, closeM, over) {
+  const pi = over && over.pi != null ? over.pi : pickW(rnd, [0.40, 0.14, 0.24, 0.22]);
+  const gi = over && over.gi != null ? over.gi : pickW(rnd, [0.12, 0.34, 0.42, 0.12]);
+  const li = over && over.li != null ? over.li : pickW(rnd, [0.30, 0.14, 0.08, 0.06, 0.42]);
+  const sk = SKILLS[pi];
+  return { pi, gi, li, practice: PRACTICES[pi], grade: GRADES[gi], loc: LOCS[li], skill: sk[Math.floor(rnd() * sk.length)], openM, closeM, billable: rnd() < 0.85 };
+}
+function ttfDays(rnd, e, t) {
+  let d = 36 + [-8, 0, 14, 26][e.gi] + [0, 2, 10, 12][e.pi];
+  d *= 1 + 0.4 * smooth((t - 36) / 10);
+  return d * (0.65 + 0.7 * rnd());
+}
+
+function generate(seed) {
+  const rnd = mulberry32(seed || 7);
+  const emps = [], vacs = [];
+  let act = [];
+  for (let n = 0; n < 590; n++) { const e = makeEmp(rnd, -Math.pow(rnd(), 1.6) * 84); emps.push(e); act.push(e); }
+  for (let i = 0; i <= 47; i++) {
+    const len = i < 47 ? 1 : NOW - 47;
+    const keep = [];
+    for (const e of act) {
+      if (rnd() < hazard(e, i + len / 2) * len) terminate(rnd, e, i + rnd() * len); else keep.push(e);
+    }
+    act = keep;
+    let n = Math.round(targetHC(i + len) - act.length + (i < 47 ? (rnd() - 0.5) * 5 : 0));
+    if (n < 0) n = 0;
+    for (let j = 0; j < n; j++) {
+      const e = makeEmp(rnd, i + rnd() * len); emps.push(e); act.push(e);
+      if (e.hire > 6) { const close = e.hire; const open = close - ttfDays(rnd, e, close) / 30; vacs.push(makeVac(rnd, open, close, { pi: e.pi, gi: e.gi, li: e.li })); }
+    }
+  }
+  const nOpen = 34;
+  for (let j = 0; j < nOpen; j++) vacs.push(makeVac(rnd, NOW - Math.pow(rnd(), 1.3) * 3.2, null));
+  for (const e of emps) { genStates(e, rnd); genSurvey(e); }
+  return { emps, vacs, synthetic: true };
+}
+
+const accRate = t => 0.86 - 0.17 * smooth((t - 30) / 16);
+const match = (e, f) => (f.p < 0 || e.pi === f.p) && (f.g < 0 || e.gi === f.g) && (f.l < 0 || e.li === f.l);
+function countAt(list, t) { let n = 0; for (const e of list) if (active(e, t)) n++; return n; }
+function avgHC(list, from, to) { let s = 0; for (let j = 0; j <= 4; j++) s += countAt(list, from + (to - from) * j / 4); return s / 5; }
+const tenureOf = e => (e.term == null ? NOW : e.term) - e.hire;
+
+function compute(D, f) {
+  const S = D.emps.filter(e => match(e, f));
+  const SL = S.filter(e => e.gi >= 2);
+  const V = D.vacs.filter(v => match(v, f));
+  const z = () => new Array(K).fill(0);
+  const o = {
+    hc: z(), plan: ENDS.map(planAt), benchN: z(), utilSum: z(), rev: z(), payroll: z(), benchCost: z(),
+    exitsM: z(), exitsVol: z(), exitsInvol: z(), exitsReg: z(), costM: z(), costG: [z(), z(), z(), z()],
+    ltmExit: z(), ltmVol: z(), ltmReg: z(), ltmEarly: z(), ltmSL: z(), ltmCost: z(),
+    vacLoss: z(), vacOpen: z(), vacFte: z(), ttf: new Array(K).fill(null), hiresM: z(), hiresPlan: z(), acc: z()
+  };
+  for (const e of S) {
+    const rate = RATE[e.grade], pay = e.salary * 1.15 / 12;
+    for (let k = 0; k < K; k++) {
+      if (!active(e, ENDS[k])) continue;
+      o.hc[k]++; o.benchN[k] += e.bench[k]; o.utilSum[k] += e.util[k];
+      o.rev[k] += e.util[k] * 168 * rate; o.payroll[k] += pay; if (e.bench[k]) o.benchCost[k] += pay;
+    }
+    if (e.hire >= I0 && e.hire <= NOW) { const hk = Math.min(47, Math.floor(e.hire)) - I0; if (hk >= 0 && hk < K) o.hiresM[hk]++; }
+    if (e.term != null) {
+      const cost = e.salary * CFG.repl[e.grade];
+      const kk = Math.min(47, Math.floor(e.term)) - I0;
+      if (kk >= 0 && kk < K) {
+        o.exitsM[kk]++; (e.termType === 'vol' ? o.exitsVol : o.exitsInvol)[kk]++; if (e.regretted) o.exitsReg[kk]++;
+        o.costM[kk] += cost; o.costG[e.gi][kk] += cost;
+      }
+      for (let k = 0; k < K; k++) {
+        if (e.term > ENDS[k] - 12 && e.term <= ENDS[k]) {
+          o.ltmExit[k]++; if (e.termType === 'vol') o.ltmVol[k]++; if (e.regretted) o.ltmReg[k]++;
+          if (e.term - e.hire < 12) o.ltmEarly[k]++; if (e.gi >= 2) o.ltmSL[k]++; o.ltmCost[k] += cost;
+        }
+      }
+    }
+  }
+  o.util = o.utilSum.map((s, k) => o.hc[k] ? 100 * s / o.hc[k] : null);
+  o.bench = o.benchN.map((s, k) => o.hc[k] ? 100 * s / o.hc[k] : null);
+  o.avgHC = ENDS.map((e, k) => avgHC(S, e - 12, e));
+  o.avgSL = ENDS.map((e, k) => avgHC(SL, e - 12, e));
+  o.turn = o.ltmExit.map((n, k) => o.avgHC[k] ? 100 * n / o.avgHC[k] : null);
+  o.turnVol = o.ltmVol.map((n, k) => o.avgHC[k] ? 100 * n / o.avgHC[k] : null);
+  o.turnReg = o.ltmReg.map((n, k) => o.avgHC[k] ? 100 * n / o.avgHC[k] : null);
+  o.turnSL = o.ltmSL.map((n, k) => o.avgSL[k] ? 100 * n / o.avgSL[k] : null);
+  o.payPct = o.payroll.map((p, k) => o.rev[k] ? 100 * p / o.rev[k] : null);
+  o.revPerFte = o.rev.map((r, k) => o.hc[k] ? r / o.hc[k] : null);
+  for (const v of V) {
+    const rate = RATE[v.grade], c = v.closeM == null ? Infinity : v.closeM;
+    for (let k = 0; k < K; k++) {
+      const s = startOf(k), e = ENDS[k], ov = Math.max(0, Math.min(c, e) - Math.max(v.openM, s));
+      if (ov > 0) { const fr = ov / (e - s); o.vacFte[k] += fr; if (v.billable) o.vacLoss[k] += fr * rate * 168 * 0.85; }
+      if (v.openM <= e && c > e) o.vacOpen[k]++;
+    }
+  }
+  for (let k = 0; k < K; k++) {
+    let s = 0, n = 0;
+    for (const v of V) if (v.closeM != null && v.closeM > ENDS[k] - 3 && v.closeM <= ENDS[k]) { s += (v.closeM - v.openM) * 30; n++; }
+    o.ttf[k] = n >= 3 ? s / n : null;
+  }
+  o.hiresPlan = ENDS.map((e, k) => (4.75 + 0.0125 * o.hc[k]) * (e - startOf(k)));
+  o.acc = ENDS.map((e, k) => 100 * accRate(e) + ((k * 37) % 7 - 3) * 0.8);
+  o.drag = o.costM.map((c, k) => c + o.benchCost[k] + o.vacLoss[k]);
+  o.openVacs = V.filter(v => v.closeM == null).sort((a, b) => a.openM - b.openM);
+  return o;
+}
+
+/* Вікно (останні N місяців): причини, стаж, теплокарта практика × грейд */
+function windowStats(D, f, months) {
+  const from = NOW - months;
+  const S = D.emps.filter(e => match(e, f));
+  const ex = S.filter(e => e.term != null && e.term > from && e.term <= NOW);
+  const reasons = {}; let early = 0, reg = 0, vol = 0, cost = 0;
+  const buckets = [0, 0, 0, 0, 0, 0];
+  for (const e of ex) {
+    reasons[e.reason] = (reasons[e.reason] || 0) + 1;
+    const t = e.term - e.hire; buckets[t < 3 ? 0 : t < 6 ? 1 : t < 12 ? 2 : t < 24 ? 3 : t < 36 ? 4 : 5]++;
+    if (t < 12) early++; if (e.regretted) reg++; if (e.termType === 'vol') vol++; cost += e.salary * CFG.repl[e.grade];
+  }
+  const fl = { p: -1, g: -1, l: f.l };
+  const A = D.emps.filter(e => match(e, fl));
+  const heat = PRACTICES.map((_, pi) => GRADES.map((_, gi) => {
+    const L = A.filter(e => e.pi === pi && e.gi === gi);
+    const n = L.filter(e => e.term != null && e.term > from && e.term <= NOW).length;
+    const hc = avgHC(L, from, NOW);
+    return { n, hc: Math.round(hc), rate: hc > 3 ? 100 * n / hc * 12 / months : null };
+  }));
+  return { ex: ex.length, reasons, buckets, early, reg, vol, cost, heat };
+}
+
+function riskScore(e) {
+  const ten = NOW - e.hire; const why = []; let s = 0;
+  if ([12, 24, 36].some(x => Math.abs(ten - x) < 2.5)) { s += 15; why.push('пік стажу'); }
+  if (e.raiseM > 12) { s += Math.min(22, (e.raiseM - 12) * 1.3); why.push('давно без підвищення'); }
+  if (e.compa < 0.95) { s += Math.min(25, (0.95 - e.compa) * 160); why.push('зарплата нижче ринку'); }
+  if (e.ot > 6) { s += (e.ot - 6) * 3; why.push('овертайм ' + e.ot + ' год/тиж'); }
+  if (e.noVac > 8) { s += (e.noVac - 8) * 3; why.push(e.noVac + ' міс. без відпустки'); }
+  return { score: Math.round(Math.min(100, s + (e.perf >= 4 ? 8 : 0))), why: why.slice(0, 3) };
+}
+function riskList(D, f) {
+  const S = D.emps.filter(e => e.term == null && match(e, f) && (f.g >= 0 || e.gi >= 2));
+  return S.map(e => ({ e, ...riskScore(e) })).sort((a, b) => b.score - a.score);
+}
+
+/* Живі події (симуляція). Змінюють лише поточний місяць (MTD). */
+function liveEvent(D) {
+  const rnd = Math.random, K1 = K - 1;
+  const actives = D.emps.filter(e => e.term == null);
+  const r = rnd();
+  if (r < 0.3) {
+    const e = actives[Math.floor(rnd() * actives.length)];
+    terminate(rnd, e, NOW);
+    return { type: 'exit', text: `Звільнення: ${e.grade} · ${e.practice}, ${e.loc}`, sub: `${e.termType === 'vol' ? 'за власним бажанням' : 'з ініціативи компанії'} · ${e.reason}${e.regretted ? ' · regretted' : ''} · вартість $${Math.round(e.salary * CFG.repl[e.grade] / 1000)}k` };
+  }
+  if (r < 0.58) {
+    const open = D.vacs.filter(v => v.closeM == null);
+    const v = open.length && rnd() < 0.85 ? open[Math.floor(rnd() * open.length)] : null;
+    const e = makeEmp(rnd, NOW, v ? { pi: v.pi, gi: v.gi, li: v.li } : {});
+    D.emps.push(e); setUtil(e, K1, rnd() < 0.3, rnd);
+    if (v) v.closeM = NOW;
+    return { type: 'hire', text: `Вихід на роботу: ${e.grade} · ${e.practice}, ${e.loc}`, sub: v ? `закрито вакансію «${v.skill}» · відкрита ${Math.round((NOW - v.openM) * 30)} дн.` : 'найм поза планом вакансій' };
+  }
+  if (r < 0.74) {
+    const v = makeVac(rnd, NOW, null); D.vacs.push(v);
+    return { type: 'vac', text: `Нова вакансія: ${v.grade} ${v.skill}`, sub: `${v.practice} · ${v.loc}${v.billable ? ' · billable' : ''}` };
+  }
+  const e = actives[Math.floor(rnd() * actives.length)];
+  if (e.hire > NOW) return { type: 'vac', text: 'Без змін', sub: '' };
+  const was = e.bench[K1]; setUtil(e, K1, !was, rnd); e.benchW = was ? 0 : 0.3; if (was) e.rollOff = null;
+  return was
+    ? { type: 'proj', text: `Новий проєкт: ${e.grade} · ${e.practice}`, sub: 'знято з bench, billable з наступного тижня' }
+    : { type: 'bench', text: `Roll-off на bench: ${e.grade} · ${e.practice}`, sub: `проєкт завершено · $${Math.round(e.salary * 1.15 / 12 / 100) / 10}k/міс. вартість bench` };
+}
+
+/* ===== Фаза 2 ===== */
+function hiringStats(D, f, months) {
+  const from = NOW - months, H = D.emps.filter(e => match(e, f) && e.hire > from && e.hire <= NOW);
+  const bySrc = SRC.map((n, i) => { const L = H.filter(e => e.si === i); const cost = L.reduce((a, e) => a + (SRC_COST[i] == null ? 0.2 * e.salary : SRC_COST[i]), 0); const left = L.filter(e => e.term != null && e.term - e.hire < 12).length; return { n, hires: L.length, cost, cph: L.length ? cost / L.length : null, early: L.length ? 100 * left / L.length : null }; });
+  const hn = H.length, acc = accRate(NOW - months / 2);
+  const offers = Math.round(hn / 0.94 / acc), tech = Math.round(offers / 0.28), screen = Math.round(tech / 0.45), apps = Math.round(screen / 0.2);
+  const totalCost = bySrc.reduce((a, s) => a + s.cost, 0);
+  return { hires: hn, bySrc, funnel: [['Відгуки', apps], ['Скринінг', screen], ['Технічне інтервʼю', tech], ['Офер', offers], ['Прийняли офер', Math.round(hn / 0.94)], ['Вийшли на роботу', hn]], cph: hn ? totalCost / hn : null };
+}
+function benchStats(D, f) {
+  const k = K - 1, A = D.emps.filter(e => e.term == null && match(e, f)), B = A.filter(e => e.bench[k]);
+  const ageB = [[0, 2], [2, 4], [4, 1e9]].map(([a, b]) => B.filter(e => e.benchW >= a && e.benchW < b));
+  const cost = L => L.reduce((s, e) => s + e.salary * 1.15 / 12, 0);
+  const roll = [[0, 30], [30, 60], [60, 90]].map(([a, b]) => A.filter(e => !e.bench[k] && e.rollOff != null && e.rollOff > a && e.rollOff <= b));
+  const rev = L => L.reduce((s, e) => s + e.util[k] * 168 * RATE[e.grade], 0);
+  const skills = []; SKILLS.forEach((arr, pi) => arr.forEach(sk => {
+    const bn = B.filter(e => e.pi === pi && e.skill === sk).length, r30 = roll[0].filter(e => e.pi === pi && e.skill === sk).length, r90 = roll[0].concat(roll[1], roll[2]).filter(e => e.pi === pi && e.skill === sk).length;
+    const vac = D.vacs.filter(v => v.closeM == null && match(v, f) && v.pi === pi && v.skill === sk).length;
+    skills.push({ pi, skill: sk, bench: bn, r30, r90, vac, bal: bn + r30 - vac });
+  }));
+  return { B, ageB, ageCost: ageB.map(cost), roll, rollRev: roll.map(rev), skills: skills.filter(s => s.bench + s.r90 + s.vac > 0), byGrade: GRADES.map((g, gi) => B.filter(e => e.gi === gi).length) };
+}
+const enpsOf = arr => { const r = arr.filter(v => v >= 0); return r.length >= 5 ? Math.round(100 * (r.filter(v => v >= 9).length - r.filter(v => v <= 6).length) / r.length) : null; };
+function engagementStats(D, f) {
+  const A = D.emps.filter(e => e.term == null && match(e, f)), U = D.emps.filter(e => match(e, { p: -1, g: f.g, l: f.l }));
+  const q = L => Array.from({ length: 8 }, (_, i) => enpsOf(L.filter(e => active(e, NOW - 3 * (7 - i))).map(e => e.enps[i])));
+  const ot = [0, 0, 0, 0], vc = [0, 0, 0, 0];
+  A.forEach(e => { ot[e.ot < 2 ? 0 : e.ot < 6 ? 1 : e.ot < 10 ? 2 : 3]++; vc[e.noVac < 4 ? 0 : e.noVac < 7 ? 1 : e.noVac < 10 ? 2 : 3]++; });
+  const teams = {}; A.forEach(e => (teams[e.team] = teams[e.team] || []).push(e));
+  const rows = Object.entries(teams).filter(([, L]) => L.length >= 6).map(([t, L]) => {
+    const pi = Math.floor(t / 100), n = L.length, avgOt = L.reduce((a, e) => a + e.ot, 0) / n, nv = 100 * L.filter(e => e.noVac > 9).length / n, rk = L.reduce((a, e) => a + riskScore(e).score, 0) / n;
+    const ex = D.emps.filter(e => e.team == +t && e.term != null && e.term > NOW - 12).length, en = enpsOf(L.map(e => e.enps[7]));
+    return { code: TEAM_CODE[pi] + '-' + String(t % 100 + 1).padStart(2, '0'), pi, n, enps: en, avgOt, nv, rk, ex, score: (en == null ? 0 : -en) * 0.4 + avgOt * 4 + nv * 0.4 + rk * 0.6 + ex / n * 80 };
+  }).sort((a, b) => b.score - a.score);
+  return { n: A.length, enps: q(A), enpsP: PRACTICES.map((_, pi) => q(U.filter(e => e.pi === pi))), resp: A.filter(e => e.enps[7] >= 0).length, ot, vc, avgOt: A.length ? A.reduce((a, e) => a + e.ot, 0) / A.length : null, otHigh: A.filter(e => e.ot > 6).length, vacHigh: A.filter(e => e.noVac > 9).length, teams: rows };
+}
+
+/* ===== Фаза 3: імпорт HRIS (CSV) ===== */
+function parseCsv(text) {
+  text = text.replace(/^\uFEFF/, ''); const first = text.split(/\r?\n/)[0] || '';
+  const d = [',', ';', '\t'].map(c => [c, first.split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true; else if (c === d) { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); cur = ''; if (row.some(x => x.trim())) rows.push(row); row = []; }
+    else cur += c;
+  }
+  row.push(cur); if (row.some(x => x.trim())) rows.push(row);
+  const head = (rows.shift() || []).map(h => h.trim().toLowerCase());
+  return rows.map(r => { const o = {}; head.forEach((h, i) => o[h] = (r[i] || '').trim()); return o; });
+}
+function dateToU(str) {
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(str), y, mo, d;
+  if (m) { y = +m[1]; mo = +m[2]; d = +m[3]; } else if ((m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(str))) { d = +m[1]; mo = +m[2]; y = +m[3]; } else return null;
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return (y - 2022) * 12 + (mo - 12) + (d - 1) / 30;
+}
+const REQ_COLS = ['employee_id', 'practice', 'grade', 'location', 'hire_date', 'salary'];
+function importEmployees(text) {
+  const rows = parseCsv(text), errs = [], emps = [], rnd = mulberry32(5);
+  if (!rows.length) return { ok: false, errs: ['Файл порожній або без рядка заголовків.'] };
+  const miss = REQ_COLS.filter(c => !(c in rows[0]));
+  if (miss.length) return { ok: false, errs: ['Немає обовʼязкових колонок: ' + miss.join(', ')] };
+  const find = (arr, v) => arr.findIndex(x => x.toLowerCase() === String(v).toLowerCase());
+  rows.forEach((r, n) => {
+    const ln = n + 2, pi = find(PRACTICES, r.practice), gi = find(GRADES, r.grade);
+    let li = find(LOCS, r.location); const hire = dateToU(r.hire_date), sal = parseFloat(String(r.salary).replace(/[^\d.]/g, ''));
+    if (pi < 0) return errs.push(`Рядок ${ln}: невідома практика «${r.practice}»`);
+    if (gi < 0) return errs.push(`Рядок ${ln}: невідомий грейд «${r.grade}»`);
+    if (hire == null) return errs.push(`Рядок ${ln}: некоректна hire_date «${r.hire_date}» (формат РРРР-ММ-ДД)`);
+    if (!(sal > 0)) return errs.push(`Рядок ${ln}: некоректна salary`);
+    if (li < 0) li = LOCS.length - 1;
+    const term = r.term_date ? dateToU(r.term_date) : null;
+    if (r.term_date && (term == null || term < hire)) return errs.push(`Рядок ${ln}: некоректна term_date`);
+    if (term != null && term <= 1) return;
+    const e = makeEmp(rnd, hire, { pi, gi, li });
+    e.id = r.employee_id; e.name = r.name || r.employee_id; e.salary = Math.round(r.salary_period === 'month' ? sal * 12 : sal);
+    if (r.performance) e.perf = Math.max(1, Math.min(5, Math.round(+r.performance) || 3)); else e.perf = 3;
+    if (r.skill) e.skill = r.skill; if (r.team) { const t = parseInt(r.team.replace(/\D/g, '')); e.team = pi * 100 + ((isNaN(t) ? e.hs : t) % TEAMS[pi]); }
+    const si = r.source ? find(SRC, r.source) : -1; if (si >= 0) { e.si = si; e.src = SRC[si]; }
+    e.compa = 1; e.raiseM = 12; e.ot = 0; e.noVac = 0; e.rollOff = null; e.enps.fill(-1);
+    if (term != null) { e.term = term; const v = /^vol|добров/i.test(r.term_type || 'vol'); e.termType = v ? 'vol' : 'invol'; e.reason = r.term_reason || (v ? 'Інше' : 'Скорочення / реорганізація'); e.regretted = v && e.perf >= 4; }
+    const u = r.utilization ? Math.min(1, Math.max(0, parseFloat(r.utilization) / (parseFloat(r.utilization) > 1 ? 100 : 1))) : 0.8, bn = /^(1|true|так|yes)$/i.test(r.bench || '');
+    for (let k = 0; k < K; k++) if (active(e, ENDS[k])) { const b = k === K - 1 && bn; e.bench[k] = b ? 1 : 0; e.util[k] = b ? 0 : u; }
+    if (bn) e.benchW = 4; if (r.ot) e.ot = +r.ot || 0;
+    emps.push(e);
+  });
+  const ids = new Set(); let dup = 0; const uniq = emps.filter(e => { if (ids.has(e.id)) { dup++; return false; } ids.add(e.id); return true; });
+  if (dup) errs.push(`Пропущено дублікатів employee_id: ${dup}`);
+  const act = uniq.filter(e => e.term == null).length;
+  return { ok: uniq.length >= 20, emps: uniq, errs, total: rows.length, active: act };
+}
+if (typeof module !== 'undefined') module.exports = { generate, compute, windowStats, riskList, TARGETS, NOW, K, ENDS, PRACTICES, GRADES, liveEvent };
+
+'use strict';
+/* ====== Інтерфейс ====== */
+const S = { tab: 'executive', period: 12, p: -1, g: -1, l: -1, role: 'hr', dirP: 0, live: true, wi: { turn: 3, bench: 2, ttf: 10 }, feed: [], lastUpdate: Date.now() };
+let D = generate(7), O = null, PB = null, PENDING = [], HOV = {}, CID = 0;
+const $ = s => document.querySelector(s);
+const TABS = ['executive', 'turnover', 'cost', 'bench', 'hiring', 'people', 'alerts', 'data'];
+const ALERT = { turn: 18, sl: 20, bench: 11, util: 72, ttf: 55, acc: 74, enps: 5, risk: 10, vacAge: 90 };
+try { Object.assign(ALERT, JSON.parse(localStorage.getItem('hr-alerts') || '{}')); } catch (e) { }
+const saveAlerts = () => { try { localStorage.setItem('hr-alerts', JSON.stringify(ALERT)); } catch (e) { } };
+const PC = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+const GC = ['var(--g1)', 'var(--g2)', 'var(--g3)', 'var(--g4)'];
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const cmp = v => v >= 1e6 ? '$' + (v / 1e6).toFixed(1).replace('.', ',') + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'k' : '$' + Math.round(v);
+const nf = (x, d = 1) => x == null || isNaN(x) ? '—' : x.toFixed(d).replace('.', ',');
+const usd = x => x == null ? '—' : Math.abs(x) >= 1e6 ? '$' + (x / 1e6).toFixed(2).replace('.', ',') + ' млн' : Math.abs(x) >= 1e4 ? '$' + Math.round(x / 1e3) + ' тис' : Math.abs(x) >= 1e3 ? '$' + (x / 1e3).toFixed(1).replace('.', ',') + ' тис' : '$' + Math.round(x);
+const sum = (a, i, j) => { let s = 0; for (let k = i; k <= j; k++) s += a[k] || 0; return s; };
+const L = a => a[a.length - 1];
+const filt = () => ({ p: S.p, g: S.g, l: S.l });
+
+/* --- розрахунок статусу й плитки --- */
+function status(v, good, warn, lowerBetter) {
+  if (v == null) return 'mute';
+  if (lowerBetter) return v <= good ? 'good' : v <= warn ? 'warn' : 'bad';
+  return v >= good ? 'good' : v >= warn ? 'warn' : 'bad';
+}
+const CHIP = { good: '✓ У цілі', warn: '! Увага', bad: '▲ Поза ціллю', mute: '— немає даних' };
+function sparkSvg(vals, color) {
+  const v = vals.filter(x => x != null); if (v.length < 2) return '<div class="spark"></div>';
+  const mn = Math.min(...v), mx = Math.max(...v), r = mx - mn || 1;
+  const pts = vals.map((x, i) => [i / (vals.length - 1) * 120, 30 - ((x == null ? mn : x) - mn) / r * 26]);
+  const line = pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const y = pts[pts.length - 1][1] / 34 * 100;
+  return `<div class="spark"><svg viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,34 ${line} 120,34" fill="${color}" opacity=".13"/><polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg><i style="top:${y}%;background:${color}"></i></div>`;
+}
+function tile(t) {
+  const st = t.st || 'mute';
+  const d = t.delta == null ? '' : `<span class="delta ${t.dgood ? 'good' : t.dbad ? 'bad' : 'mute'}">${t.delta > 0 ? '▲ ' : t.delta < 0 ? '▼ ' : '● '}${t.dtxt}</span>`;
+  return `<div class="tile"><div class="t-top"><span class="t-label">${t.label}<span class="info" tabindex="0" data-tip="${esc(t.info)}">i</span></span><span class="chip ${st}">${CHIP[st]}</span></div>
+  <div class="t-val">${t.val}<small>${t.unit || ''}</small></div><div class="t-sub">${t.sub}${d ? ' · ' + d : ''}</div>${sparkSvg(t.spark, t.color || 'var(--s1)')}</div>`;
+}
+function dlt(cur, prev, lowerBetter, unit, d = 1) {
+  if (cur == null || prev == null) return {};
+  const x = cur - prev, good = lowerBetter ? x < 0 : x > 0, bad = lowerBetter ? x > 0 : x < 0, small = Math.abs(x) < Math.pow(10, -d) / 2;
+  return { delta: small ? 0 : x, dtxt: small ? 'без змін' : (x > 0 ? '+' : '−') + nf(Math.abs(x), d) + ' ' + unit + ' р/р', dgood: !small && good, dbad: !small && bad };
+}
+
+/* --- графіки --- */
+function niceTicks(mn, mx, n) {
+  const raw = (mx - mn) / n || 1, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p, a = Math.floor(mn / step) * step, b = Math.ceil(mx / step) * step, t = [];
+  for (let v = a; v <= b + step / 2; v += step) t.push(+v.toFixed(6));
+  return t;
+}
+function placeChart(fn) { const id = 'c' + (++CID); PENDING.push({ id, fn }); return `<div class="chart" id="${id}"></div>`; }
+function legend(items) { return `<div class="legend">${items.map(i => `<span><i class="${i.ln ? 'ln' : ''}" style="background:${i.c}"></i>${i.n}</span>`).join('')}</div>`; }
+const visK = () => { const n = Math.min(K, S.period); return Array.from({ length: n }, (_, i) => K - n + i); };
+const xLab = (ks, i) => ks.length > 18 ? (i % 3 === 0 || i === ks.length - 1) : ks.length > 8 ? (i % 2 === 0 || i === ks.length - 1) : true;
+const shortLabel = k => pointLabel(k).replace(' (MTD)', '*');
+
+function lineChart(el, o) {
+  const W = Math.max(260, el.clientWidth), H = o.h || 230, m = { l: 40, r: 46, t: 10, b: 24 }, ks = o.ks || visK();
+  let all = []; o.series.forEach(s => ks.forEach(k => { if (s.vals[k] != null) all.push(s.vals[k]); })); (o.refs || []).forEach(r => all.push(r.v));
+  if (!all.length) { el.innerHTML = '<p class="note">Немає даних для обраних фільтрів.</p>'; return; }
+  let mn = o.zero ? 0 : Math.min(...all), mx = Math.max(...all);
+  if (!o.zero) { const pad = (mx - mn) * 0.12 || 1; mn -= pad; mx += pad; } else mx *= 1.08;
+  const tk = niceTicks(mn, mx, 4); mn = tk[0]; mx = tk[tk.length - 1];
+  const X = i => m.l + (ks.length === 1 ? 0 : i / (ks.length - 1)) * (W - m.l - m.r), Y = v => m.t + (1 - (v - mn) / (mx - mn)) * (H - m.t - m.b);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria || '')}">`;
+  tk.forEach(v => { s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${nf(v, o.dec != null ? o.dec : 0)}</text>`; });
+  ks.forEach((k, i) => { if (xLab(ks, i)) s += `<text x="${X(i)}" y="${H - 6}" text-anchor="middle">${shortLabel(k)}</text>`; });
+  (o.refs || []).forEach(r => { s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(r.v)}" y2="${Y(r.v)}" stroke="${r.c}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${m.l + 4}" y="${Y(r.v) - 5}" style="fill:${r.c};font-weight:700">${r.n}</text>`; });
+  o.series.forEach((se, si) => {
+    const pts = ks.map((k, i) => se.vals[k] == null ? null : [X(i), Y(se.vals[k])]).filter(Boolean); if (!pts.length) return;
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+    if (se.area) s += `<path d="${d} L${pts[pts.length - 1][0]} ${Y(mn)} L${pts[0][0]} ${Y(mn)}Z" fill="${se.color}" opacity=".10"/>`;
+    s += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.w || 2.2}" ${se.dash ? 'stroke-dasharray="5 4"' : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+    const lp = pts[pts.length - 1]; s += `<circle cx="${lp[0]}" cy="${lp[1]}" r="4" fill="${se.color}" stroke="var(--card)" stroke-width="2"/>`;
+    if (!se.dash) s += `<text class="lbl" x="${lp[0] + 8}" y="${lp[1] + 4}">${nf(L(ks.map(k => se.vals[k]).filter(v => v != null)), o.dec != null ? o.dec : 0)}</text>`;
+  });
+  s += `<line class="xh" y1="${m.t}" y2="${H - m.b}" stroke="var(--faint)" stroke-width="1" style="display:none"/>`;
+  o.series.forEach((se, si) => s += `<circle class="hd" data-s="${si}" r="4.5" fill="${se.color}" stroke="var(--card)" stroke-width="2" style="display:none"/>`);
+  s += `<rect class="hit" x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}" fill="transparent" data-h="${el.id}"/></svg>`;
+  HOV[el.id] = { type: 'line', ks, X: i => X(i), Y, o, m };
+  el.innerHTML = s;
+}
+
+function barChart(el, o) {
+  const W = Math.max(260, el.clientWidth), H = o.h || 220, m = { l: o.yfmt ? 50 : 40, r: 8, t: 10, b: 24 }, ks = visK();
+  const tot = ks.map(k => o.series.reduce((a, s) => a + (s.vals[k] || 0), 0));
+  const tk = niceTicks(0, Math.max(...tot, 1) * 1.05, 4), mx = tk[tk.length - 1];
+  const bw = (W - m.l - m.r) / ks.length, Y = v => m.t + (1 - v / mx) * (H - m.t - m.b);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria || '')}">`;
+  tk.forEach(v => s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${o.yfmt ? o.yfmt(v) : nf(v, 0)}</text>`);
+  ks.forEach((k, i) => {
+    let acc = 0; const x = m.l + i * bw + bw * 0.16, w = bw * 0.68;
+    o.series.forEach(se => { const v = se.vals[k] || 0; if (v <= 0) return; const y0 = Y(acc), y1 = Y(acc + v); s += `<rect x="${x}" y="${y1}" width="${w}" height="${Math.max(0, y0 - y1)}" fill="${se.color}" stroke="var(--card)" stroke-width="1.5"/>`; acc += v; });
+    if (xLab(ks, i)) s += `<text x="${m.l + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${shortLabel(k)}</text>`;
+    const tip = `<b>${pointLabel(k)}</b>` + o.series.map(se => `<div class="tr"><span><i class="sw" style="background:${se.color}"></i>${se.name}</span><b>${o.fmt ? o.fmt(se.vals[k] || 0) : nf(se.vals[k] || 0, 0)}</b></div>`).join('') + (o.series.length > 1 ? `<div class="tr"><span>Разом</span><b>${o.fmt ? o.fmt(tot[i]) : nf(tot[i], 0)}</b></div>` : '');
+    s += `<rect x="${m.l + i * bw}" y="${m.t}" width="${bw}" height="${H - m.t - m.b}" fill="transparent" data-tip="${esc(tip)}"/>`;
+  });
+  el.innerHTML = s + '</svg>';
+}
+
+/* --- тултіп --- */
+const tipEl = () => $('#tip');
+function showTip(html, x, y) {
+  const t = tipEl(); t.innerHTML = html; t.style.display = 'block';
+  const r = t.getBoundingClientRect(); let px = x + 14, py = y + 14;
+  if (px + r.width > innerWidth - 8) px = x - r.width - 14; if (py + r.height > innerHeight - 8) py = y - r.height - 14;
+  t.style.left = Math.max(8, px) + 'px'; t.style.top = Math.max(8, py) + 'px';
+}
+const hideTip = () => { tipEl().style.display = 'none'; document.querySelectorAll('.xh,.hd').forEach(n => n.style.display = 'none'); };
+document.addEventListener('pointermove', ev => {
+  const h = ev.target.closest && ev.target.closest('[data-h]');
+  if (h) {
+    const c = HOV[h.dataset.h]; if (!c) return; const svg = h.ownerSVGElement, r = svg.getBoundingClientRect(), x = ev.clientX - r.left;
+    let bi = 0, bd = 1e9; c.ks.forEach((k, i) => { const d = Math.abs(c.X(i) - x); if (d < bd) { bd = d; bi = i; } });
+    const k = c.ks[bi], xh = svg.querySelector('.xh'); xh.setAttribute('x1', c.X(bi)); xh.setAttribute('x2', c.X(bi)); xh.style.display = '';
+    let rows = '';
+    c.o.series.forEach((se, si) => { const v = se.vals[k], d = svg.querySelector(`.hd[data-s="${si}"]`); if (v == null) { d.style.display = 'none'; return; } d.setAttribute('cx', c.X(bi)); d.setAttribute('cy', c.Y(v)); d.style.display = ''; rows += `<div class="tr"><span><i class="sw" style="background:${se.color}"></i>${se.name}</span><b>${(c.o.fmt || (x => nf(x, c.o.dec || 0)))(v)}</b></div>`; });
+    showTip(`<b>${pointLabel(k)}</b>${rows}`, ev.clientX, ev.clientY); return;
+  }
+  const t = ev.target.closest && ev.target.closest('[data-tip]');
+  if (t) showTip(t.getAttribute('data-tip'), ev.clientX, ev.clientY); else hideTip();
+});
+document.addEventListener('pointerleave', hideTip, true);
+
+/* --- допоміжні блоки --- */
+function hbars(items, color, fmt) {
+  const mx = Math.max(...items.map(i => i.v), 1);
+  return items.map(i => `<div class="hb" data-tip="${esc(i.tip || '')}"><span>${i.n}</span><div class="tr"><div class="fl" style="width:${i.v / mx * 100}%;background:${color}"></div></div><span class="v">${fmt ? fmt(i.v) : i.v}</span></div>`).join('');
+}
+function heatHtml(w) {
+  const rates = w.heat.flat().map(c => c.rate).filter(v => v != null), mx = Math.max(...rates, 25);
+  let h = '<div class="heat"><span></span>' + GRADES.map(g => `<span class="hh" style="text-align:center">${g}</span>`).join('');
+  PRACTICES.forEach((p, pi) => {
+    h += `<span class="rl">${p}</span>`;
+    GRADES.forEach((g, gi) => {
+      const c = w.heat[pi][gi], on = S.p === pi && S.g === gi, a = c.rate == null ? 0 : Math.min(1, c.rate / mx) * 70;
+      h += `<button class="hc" data-heat="${pi},${gi}" aria-pressed="${on}" style="background:color-mix(in srgb,var(--bad) ${a}%,var(--card))" data-tip="${esc(`<b>${p} · ${g}</b><div class="tr"><span>Річний відтік</span><b>${nf(c.rate)}%</b></div><div class="tr"><span>Звільнень</span><b>${c.n}</b></div><div class="tr"><span>Сер. headcount</span><b>${c.hc}</b></div>`)}"><b>${c.rate == null ? '—' : nf(c.rate, 0) + '%'}</b><span>${c.n} з ${c.hc}</span></button>`;
+    });
+  });
+  return h + '</div>';
+}
+const canSee = e => S.role === 'hr' || (S.role === 'dir' && e.pi === S.dirP);
+
+/* --- екрани --- */
+function kpis(o) {
+  const k = K - 1, y = k - 12, ytd = sum(o.costM, 25, k), pytd = sum(o.costM, 13, 22) + o.costM[23] / 3;
+  const sp = a => a.slice(k - 11, k + 1);
+  const gap = o.hc[k] - o.plan[k];
+  return [
+    { label: 'Headcount', info: 'Активні співробітники на кінець періоду vs план найму.', val: o.hc[k], sub: `план ${Math.round(o.plan[k])} (${gap >= 0 ? '+' : ''}${Math.round(gap)})`, st: status(-gap / o.plan[k] * 100, 2, 4, true), ...dlt(o.hc[k], o.hc[y], false, '', 0), dtxt: (o.hc[k] - o.hc[y] >= 0 ? '+' : '−') + Math.abs(o.hc[k] - o.hc[y]) + ' р/р', spark: sp(o.hc) },
+    { label: 'Turnover LTM', info: 'Звільнення за останні 12 міс. / середній headcount × 100. Ціль ≤15%, червоний >18%.', val: nf(o.turn[k]), unit: '%', sub: 'ціль ≤15%', st: status(o.turn[k], 15, 18, true), ...dlt(o.turn[k], o.turn[y], true, 'п.п.'), spark: sp(o.turn), color: 'var(--s2)' },
+    { label: 'Turnover Sr + Lead', info: 'Те саме лише для грейдів Sr і Lead (найдорожчі втрати).', val: nf(o.turnSL[k]), unit: '%', sub: 'ціль ≤15%', st: status(o.turnSL[k], 15, 18, true), ...dlt(o.turnSL[k], o.turnSL[y], true, 'п.п.'), spark: sp(o.turnSL.map(v => v)), color: 'var(--s2)' },
+    { label: 'Regretted LTM', info: 'Добровільні виходи співробітників з performance ≥4 / середній headcount. Ціль ≤6% (припущення, змінюється в налаштуваннях).', val: nf(o.turnReg[k]), unit: '%', sub: 'ціль ≤6%', st: status(o.turnReg[k], 6, 8, true), ...dlt(o.turnReg[k], o.turnReg[y], true, 'п.п.'), spark: sp(o.turnReg), color: 'var(--s2)' },
+    { label: 'Cost of turnover YTD', info: 'Σ (річна зарплата × % заміни за грейдом: Jr 50 / Mid 75 / Sr 100 / Lead 150) для звільнених з 1 січня.', val: usd(ytd), sub: 'з 1 січня', st: ytd > pytd * 1.25 ? 'bad' : ytd > pytd * 1.08 ? 'warn' : 'good', ...(pytd ? { delta: ytd - pytd, dtxt: (ytd > pytd ? '+' : '−') + nf(Math.abs(ytd / pytd - 1) * 100, 0) + '% р/р', dbad: ytd > pytd, dgood: ytd <= pytd } : {}), spark: sp(o.costM), color: 'var(--s2)' },
+    { label: 'Utilization', info: 'Білінгові години / доступні години по всіх активних (bench = 0). Ціль 75%.', val: nf(o.util[k]), unit: '%', sub: 'ціль ≥75%', st: status(o.util[k], 75, 72, false), ...dlt(o.util[k], o.util[y], false, 'п.п.'), spark: sp(o.util) },
+    { label: 'Bench', info: 'Частка людей без білінгового проєкту. Ціль ≤8%, червоний >11%.', val: nf(o.bench[k]), unit: '%', sub: `${o.benchN[k]} осіб · ${usd(o.benchCost[k])}/міс.`, st: status(o.bench[k], TARGETS.bench, TARGETS.benchBad, true), ...dlt(o.bench[k], o.bench[y], true, 'п.п.'), spark: sp(o.bench), color: 'var(--s4)' },
+    { label: 'Time-to-fill', info: 'Середній час закриття вакансій за останні 3 міс., дні від відкриття до виходу. Ціль ≤45 (припущення).', val: o.ttf[k] == null ? '—' : Math.round(o.ttf[k]), unit: ' дн.', sub: `${o.vacOpen[k]} відкритих`, st: status(o.ttf[k], 45, 55, true), ...dlt(o.ttf[k], o.ttf[y], true, 'дн.', 0), spark: sp(o.ttf.map(v => v == null ? 0 : v)), color: 'var(--s4)' }
+  ];
+}
+function insights(o, w) {
+  const k = K - 1, y = k - 12, out = [];
+  const gap = o.turn[k] - TARGETS.turnover;
+  out.push([gap > 3 ? 'bad' : gap > 0 ? 'warn' : 'good', gap > 0 ? '▲' : '✓', `Turnover LTM <b>${nf(o.turn[k])}%</b>: ${gap > 0 ? 'вище' : 'нижче'} цілі на ${nf(Math.abs(gap))} п.п., р/р ${o.turn[y] != null ? (o.turn[k] >= o.turn[y] ? '+' : '') + nf(o.turn[k] - o.turn[y]) + ' п.п.' : '—'}.`]);
+  let best = null; w.heat.forEach((r, pi) => r.forEach((c, gi) => { if (gi >= 2 && c.rate != null && c.hc >= 12 && (!best || c.rate > best.rate)) best = { ...c, pi, gi }; }));
+  if (best) out.push(['bad', '▲', `Найгарячіша зона: <b>${PRACTICES[best.pi]} · ${GRADES[best.gi]}</b>, відтік ${nf(best.rate, 0)}% річних (${best.n} з ${best.hc}).`]);
+  const slShare = D.emps.filter(e => match(e, filt()) && e.term != null && e.term > NOW - 12 && e.gi >= 2).reduce((a, e) => a + e.salary * CFG.repl[e.grade], 0) / (o.ltmCost[k] || 1);
+  out.push(['warn', '!', `Sr + Lead дають <b>${nf(slShare * 100, 0)}%</b> вартості turnover за 12 міс. (${usd(o.ltmCost[k])} усього).`]);
+  const long = D.emps.filter(e => match(e, filt()) && e.term == null && e.bench[k] && e.bench[k - 1]).length;
+  out.push([o.bench[k] > TARGETS.benchBad ? 'bad' : 'warn', '!', `Bench <b>${nf(o.bench[k])}%</b> коштує ${usd(o.benchCost[k])}/міс.; <b>${long}</b> осіб на bench понад місяць.`]);
+  out.push([o.ttf[k] > 55 ? 'bad' : 'warn', '!', `Time-to-fill <b>${o.ttf[k] == null ? '—' : Math.round(o.ttf[k])} дн.</b>; ${o.vacOpen[k]} відкритих вакансій недоотримують ~${usd(o.vacLoss[k])} виручки на місяць.`]);
+  return `<ul class="ins">${out.map(i => `<li><span class="ic ${i[0]}">${i[1]}</span><span>${i[2]}</span></li>`).join('')}</ul>`;
+}
+function feedHtml() {
+  const now = Date.now(), ic = { exit: '↓', hire: '↑', vac: '+', bench: '◔', proj: '▶' };
+  if (!S.feed.length) return '<ul class="feed"><li><span></span><span class="s">Очікуємо перші події…</span><span></span></li></ul>';
+  return '<ul class="feed">' + S.feed.map((e, i) => { const s = Math.round((now - e.t) / 1000); return `<li class="${i === 0 && s < 3 ? 'new' : ''}"><span class="ic ${e.type}">${ic[e.type] || '•'}</span><span>${e.text}<div class="s">${e.sub}</div></span><span class="ago">${s < 5 ? 'щойно' : s < 60 ? s + ' с' : Math.round(s / 60) + ' хв'}</span></li>`; }).join('') + '</ul>';
+}
+
+function viewExecutive(o, w) {
+  const ks = visK();
+  const turnYoY = o.turn.map((v, k) => k >= 12 ? o.turn[k - 12] : null).map((v, k) => k >= 12 ? o.turn[k - 12] : null);
+  const main = placeChart(el => lineChart(el, { zero: true, dec: 1, fmt: v => nf(v) + '%', aria: 'Turnover LTM у динаміці', refs: [{ v: 15, n: 'Ціль 15%', c: 'var(--good)' }, { v: 18, n: 'Червона зона 18%', c: 'var(--bad)' }], series: [{ name: 'Turnover LTM', color: 'var(--s2)', vals: o.turn, area: true }, { name: 'Добровільний', color: 'var(--s1)', vals: o.turnVol }, { name: 'Рік тому', color: 'var(--other)', vals: turnYoY, dash: true, w: 1.8 }] }));
+  const sm = (name, vals, color, refs, fmt, dec, zero) => `<div class="card"><h2>${name}</h2>${placeChart(el => lineChart(el, { h: 170, zero, dec, fmt, refs, aria: name, series: [{ name, color, vals, area: true }] }))}</div>`;
+  const tbl = `<details><summary>Дані таблицею</summary><div class="tw"><table><tr><th>Період</th><th class="n">Turnover LTM, %</th><th class="n">Добровільний, %</th><th class="n">Sr+Lead, %</th><th class="n">Звільнень за міс.</th></tr>${ks.map(k => `<tr><td>${pointLabel(k)}</td><td class="n">${nf(o.turn[k])}</td><td class="n">${nf(o.turnVol[k])}</td><td class="n">${nf(o.turnSL[k])}</td><td class="n">${o.exitsM[k]}</td></tr>`).join('')}</table></div></details>`;
+  return `<div class="grid tiles t8">${kpis(o).map(tile).join('')}</div>
+  <div class="grid row2" style="margin-top:12px"><div class="card"><div class="card-h"><h2>Динаміка turnover (LTM)</h2></div><div class="cap">Ковзні 12 місяців. Зелена лінія — ціль, червона — поріг тривоги.</div>${legend([{ n: 'Turnover LTM', c: 'var(--s2)', ln: 1 }, { n: 'Добровільний', c: 'var(--s1)', ln: 1 }, { n: 'Рік тому', c: 'var(--other)', ln: 1 }])}${main}${tbl}</div>
+  <div class="grid" style="align-content:start"><div class="card"><h2>Що змінилось</h2><div class="cap">Авто-висновки за поточними фільтрами</div>${insights(o, w)}</div><div class="card"><div class="card-h"><h2>Живі події</h2><span class="note">симуляція</span></div>${feedHtml()}</div></div></div>
+  <div class="grid row3" style="margin-top:12px">${sm('Headcount vs план', o.hc, 'var(--s1)', null, v => nf(v, 0), 0, false)}${sm('Utilization, %', o.util, 'var(--s3)', [{ v: 75, n: 'Ціль 75%', c: 'var(--good)' }], v => nf(v) + '%', 0, false)}${sm('Bench, %', o.bench, 'var(--s4)', [{ v: 8, n: 'Ціль ≤8%', c: 'var(--good)' }], v => nf(v) + '%', 0, true)}</div>`;
+}
+
+function viewTurnover(o, w) {
+  const k = K - 1, mo = S.period;
+  const stats = `<div class="grid tiles">${[
+    ['Звільнень за період', w.ex, `${nf(w.ex / mo * 12 / Math.max(1, avgHC(D.emps.filter(e => match(e, filt())), NOW - mo, NOW)) * 100)}% річних`],
+    ['Добровільні', nf(w.ex ? w.vol / w.ex * 100 : null, 0) + '%', `${w.vol} з ${w.ex}`],
+    ['Regretted', nf(w.ex ? w.reg / w.ex * 100 : null, 0) + '%', `${w.reg} співробітників з performance ≥4`],
+    ['Ранній відтік (<12 міс.)', nf(w.ex ? w.early / w.ex * 100 : null, 0) + '%', `${w.early} людей — якість найму/онбордингу`],
+    ['Вартість заміни', usd(w.cost), 'за період']
+  ].map(x => `<div class="tile"><span class="t-label">${x[0]}</span><div class="t-val">${x[1]}</div><div class="t-sub">${x[2]}</div></div>`).join('')}</div>`;
+  const bars = placeChart(el => barChart(el, { aria: 'Звільнення по місяцях', series: [{ name: 'Regretted', color: 'var(--s2)', vals: o.exitsReg }, { name: 'Інше добровільне', color: 'var(--s1)', vals: o.exitsVol.map((v, i) => v - o.exitsReg[i]) }, { name: 'З ініціативи компанії', color: 'var(--other)', vals: o.exitsInvol }] }));
+  const byP = pby().map(x => x.turn);
+  const lines = placeChart(el => lineChart(el, { zero: true, h: 220, fmt: v => nf(v) + '%', aria: 'Turnover LTM за практиками', refs: [{ v: 15, n: 'Ціль', c: 'var(--good)' }], series: byP.map((v, i) => ({ name: PRACTICES[i], color: PC[i], vals: v })) }));
+  const reasons = Object.entries(w.reasons).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([n, v]) => ({ n, v, tip: `<b>${n}</b><div class="tr"><span>Випадків</span><b>${v}</b></div><div class="tr"><span>Частка</span><b>${nf(v / w.ex * 100, 0)}%</b></div>` }));
+  const bl = ['<3 міс.', '3–6', '6–12', '12–24', '24–36', '36+ міс.'];
+  const tenure = hbars(w.buckets.map((v, i) => ({ n: bl[i], v })), 'var(--s3)');
+  return `${stats}
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Звільнення по місяцях</h2><div class="cap">Regretted — головний показник для бізнесу.</div>${legend([{ n: 'Regretted', c: 'var(--s2)' }, { n: 'Інше добровільне', c: 'var(--s1)' }, { n: 'З ініціативи компанії', c: 'var(--other)' }])}${bars}</div>
+  <div class="card"><h2>Turnover LTM за практиками</h2><div class="cap">Фільтр практики тут не застосовується.</div>${legend(PRACTICES.map((p, i) => ({ n: p, c: PC[i], ln: 1 })))}${lines}</div></div>
+  <div class="grid row3" style="margin-top:12px"><div class="card"><h2>Де відтік найбільший</h2><div class="cap">Річний відтік, практика × грейд. Клік — застосувати фільтр.</div>${heatHtml(w)}</div>
+  <div class="card"><h2>Причини виходу</h2><div class="cap">За обраний період</div>${reasons.length ? hbars(reasons, 'var(--s1)') : '<p class="note">Немає звільнень.</p>'}</div>
+  <div class="card"><h2>Стаж на момент виходу</h2><div class="cap">Кількість звільнень за стажем</div>${tenure}</div></div>
+  <p class="note" style="margin-top:12px">Список ризику відходу — на вкладці «Люди і ризики».</p>`;
+}
+function riskBlock(lim = 10) {
+  const list = riskList(D, filt());
+  if (S.role === 'board' || S.role === 'cfo') {
+    const hi = list.filter(r => r.score >= 45), cost = hi.reduce((a, r) => a + r.e.salary * CFG.repl[r.e.grade], 0);
+    return `<div class="cap">Для вашої ролі доступні лише агрегати.</div><div class="big">${hi.length} <small class="note">осіб із ризиком ≥45</small></div><div class="note">Потенційна вартість заміни: ${usd(cost)}</div>` + hbars(PRACTICES.map((p, i) => ({ n: p, v: hi.filter(r => r.e.pi === i).length })), 'var(--s2)');
+  }
+  const vis = list.filter(r => canSee(r.e)).slice(0, lim);
+  return `<div class="cap">Прозора евристика 0–100: пік стажу, давність підвищення, зарплата нижче ринку, овертайм, відпустки. ${S.role === 'dir' ? 'Показано лише вашу практику (' + PRACTICES[S.dirP] + ').' : ''}</div><div class="tw"><table><tr><th>Співробітник</th><th>Практика</th><th>Грейд</th><th>Стаж</th><th class="n">Ризик</th><th>Чому</th></tr>${vis.map(r => `<tr><td>${esc(r.e.name)} <span class="note">${r.e.id}</span></td><td>${r.e.practice}</td><td>${r.e.grade}</td><td>${nf((NOW - r.e.hire) / 12, 1)} р.</td><td class="n"><span class="score ${r.score >= 45 ? 'hi' : r.score >= 30 ? 'md' : 'lo'}">${r.score}</span></td><td>${r.why.join(', ') || '—'}</td></tr>`).join('') || '<tr><td colspan="6" class="note">Немає записів у вашій зоні доступу.</td></tr>'}</table></div>`;
+}
+
+function viewCost(o) {
+  const k = K - 1, rev12 = sum(o.rev, k - 11, k), drag12 = o.ltmCost[k] + sum(o.benchCost, k - 11, k) + sum(o.vacLoss, k - 11, k);
+  const tiles = [
+    ['Cost of turnover LTM', usd(o.ltmCost[k]), `${o.ltmExit[k]} звільнень · сер. ${usd(o.ltmCost[k] / Math.max(1, o.ltmExit[k]))}`, o.costM],
+    ['Вартість bench / міс.', usd(o.benchCost[k]), `${o.benchN[k]} осіб на bench`, o.benchCost],
+    ['Недоотримана виручка', usd(o.vacLoss[k]), `${o.vacOpen[k]} відкритих вакансій / міс.`, o.vacLoss],
+    ['Загальний drag LTM', nf(rev12 ? drag12 / rev12 * 100 : null) + '%', `${usd(drag12)} від виручки ${usd(rev12)}`, o.drag],
+    ['Payroll % виручки', nf(o.payPct[k]) + '%', 'з навантаженнями 15%', o.payPct],
+    ['Виручка на FTE / міс.', usd(o.revPerFte[k]), 'run-rate поточного місяця', o.revPerFte]
+  ].map(t => `<div class="tile"><span class="t-label">${t[0]}</span><div class="t-val">${t[1]}</div><div class="t-sub">${t[2]}</div>${sparkSvg(t[3].slice(k - 11), 'var(--s2)')}</div>`).join('');
+  const drag = placeChart(el => barChart(el, { aria: 'Вплив людського фактору на P&L', fmt: usd, yfmt: cmp, series: [{ name: 'Cost of turnover', color: 'var(--s2)', vals: o.costM }, { name: 'Bench', color: 'var(--s4)', vals: o.benchCost }, { name: 'Вакансії (недоотримана виручка)', color: 'var(--s1)', vals: o.vacLoss }] }));
+  const byG = placeChart(el => barChart(el, { aria: 'Вартість turnover за грейдами', fmt: usd, yfmt: cmp, series: GRADES.map((g, i) => ({ name: g, color: GC[i], vals: o.costG[i] })) }));
+  const pay = placeChart(el => lineChart(el, { h: 200, dec: 0, fmt: v => nf(v) + '%', aria: 'Payroll у відсотках виручки', series: [{ name: 'Payroll % виручки', color: 'var(--s1)', vals: o.payPct, area: true }] }));
+  const vtab = o.openVacs.slice(0, 8).map(v => { const d = Math.round((NOW - v.openM) * 30); return `<tr><td>${v.grade} ${v.skill}</td><td>${v.practice}</td><td>${v.loc}</td><td class="n">${d}</td><td class="n">${v.billable ? usd(RATE[v.grade] * 168 * 0.85) : '—'}</td></tr>`; }).join('');
+  const f = filt(), hires12 = D.vacs.filter(v => match(v, f) && v.closeM != null && v.closeM > NOW - 12).length;
+  const avgCost = o.ltmCost[k] / Math.max(1, o.ltmExit[k]), perVacMonth = o.vacLoss[k] / Math.max(0.1, o.vacFte[k]);
+  const sT = S.wi.turn / 100 * o.avgHC[k] * avgCost, sB = S.wi.bench / 100 * o.hc[k] * (o.payroll[k] / Math.max(1, o.hc[k])) * 12, sV = hires12 * S.wi.ttf / 30 * perVacMonth;
+  const sl = (id, label, min, max, step, v, unit, save) => `<div class="sl"><label for="${id}">${label}</label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${v}"><b>−${v} ${unit}</b><span class="note" style="grid-column:1/-1">Економія на рік: <b>${usd(save)}</b></span></div>`;
+  const cfg = GRADES.map(g => `<label class="note">${g} <input class="num" type="number" min="0" max="300" step="5" data-repl="${g}" value="${Math.round(CFG.repl[g] * 100)}"> %</label>`).join(' ');
+  return `<div class="grid tiles">${tiles}</div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Скільки люди коштують P&amp;L щомісяця</h2><div class="cap">Три джерела втрат: заміна звільнених, bench і вакансії без людини.</div>${legend([{ n: 'Cost of turnover', c: 'var(--s2)' }, { n: 'Bench', c: 'var(--s4)' }, { n: 'Вакансії', c: 'var(--s1)' }])}${drag}</div>
+  <div class="card"><h2>Вартість turnover за грейдами</h2><div class="cap">Sr і Lead коштують у 2–3 рази більше за Jr.</div>${legend(GRADES.map((g, i) => ({ n: g, c: GC[i] })))}${byG}</div></div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Відкриті вакансії</h2><div class="cap">Найдовше відкриті. Остання колонка — втрата виручки на місяць.</div><div class="tw"><table><tr><th>Позиція</th><th>Практика</th><th>Локація</th><th class="n">Днів</th><th class="n">$ / міс.</th></tr>${vtab || '<tr><td colspan="5" class="note">Немає відкритих вакансій.</td></tr>'}</table></div></div>
+  <div class="card"><h2>Payroll % виручки</h2>${pay}</div></div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Що, якщо…</h2><div class="cap">Річний ефект від покращення ключових показників (за поточними фільтрами).</div>${sl('wi-turn', 'Зменшити turnover на', 0, 8, 0.5, S.wi.turn, 'п.п.', sT)}${sl('wi-bench', 'Зменшити bench на', 0, 6, 0.5, S.wi.bench, 'п.п.', sB)}${sl('wi-ttf', 'Скоротити time-to-fill на', 0, 30, 1, S.wi.ttf, 'дн.', sV)}<div class="sl"><span>Разом на рік</span><span></span><span class="big">${usd(sT + sB + sV)}</span></div></div>
+  <div class="card"><h2>Налаштування вартості заміни</h2><div class="cap">% від річної зарплати: рекрутинг, онбординг, ramp-up, втрата знань. За замовчуванням: Jr 50, Mid 75, Sr 100, Lead 150.</div><div style="display:flex;gap:12px;flex-wrap:wrap">${cfg}</div></div></div>`;
+}
+
+
+/* ===== Фаза 2 ===== */
+const chipHtml = (st, t) => `<span class="chip ${st}">${t}</span>`;
+const mini = (label, val, sub, st) => `<div class="tile"><div class="t-top"><span class="t-label">${label}</span>${st ? `<span class="chip ${st}">${CHIP[st]}</span>` : ''}</div><div class="t-val">${val}</div><div class="t-sub">${sub}</div></div>`;
+function viewBench(o) {
+  const k = K - 1, b = benchStats(D, filt()), P = pby();
+  const rollN = b.roll.reduce((a, l) => a + l.length, 0);
+  const tiles = [mini('Utilization', nf(o.util[k]) + '%', 'ціль ≥75%', status(o.util[k], 75, 72, false)), mini('Bench', nf(o.bench[k]) + '%', `${b.B.length} осіб · ціль ≤8%`, status(o.bench[k], 8, 11, true)), mini('Вартість bench', usd(o.benchCost[k]) + '/міс.', 'зарплата з навантаженнями'), mini('Roll-off ≤30 днів', b.roll[0].length, `${usd(b.rollRev[0])}/міс. виручки під ризиком`), mini('Roll-off ≤90 днів', rollN, `${usd(b.rollRev.reduce((a, v) => a + v, 0))}/міс. під ризиком`), mini('Відкриті вакансії', o.vacOpen[k], 'попит на навички')].join('');
+  const lines = placeChart(el => lineChart(el, { h: 220, fmt: v => nf(v) + '%', aria: 'Utilization за практиками', refs: [{ v: 75, n: 'Ціль 75%', c: 'var(--good)' }], series: P.map((x, i) => ({ name: PRACTICES[i], color: PC[i], vals: x.util })) }));
+  const bl = ['до 2 тижнів', '2–4 тижні', 'понад 4 тижні'];
+  const age = hbars(b.ageB.map((l, i) => ({ n: bl[i], v: l.length, tip: `<b>${bl[i]}</b><div class="tr"><span>Осіб</span><b>${l.length}</b></div><div class="tr"><span>Вартість/міс.</span><b>${usd(b.ageCost[i])}</b></div>` })), 'var(--s4)');
+  const gr = hbars(GRADES.map((g, i) => ({ n: g, v: b.byGrade[i] })), 'var(--s4)');
+  const rl = ['0–30 днів', '31–60 днів', '61–90 днів'];
+  const roll = hbars(b.roll.map((l, i) => ({ n: rl[i], v: l.length, tip: `<b>${rl[i]}</b><div class="tr"><span>Виручка під ризиком</span><b>${usd(b.rollRev[i])}/міс.</b></div>` })), 'var(--s1)');
+  const sk = b.skills.sort((a, c) => a.bal - c.bal).map(s => `<tr><td>${s.skill}</td><td>${PRACTICES[s.pi]}</td><td class="n">${s.bench}</td><td class="n">${s.r30}</td><td class="n">${s.r90}</td><td class="n">${s.vac}</td><td class="n"><b>${s.bal > 0 ? '+' : ''}${s.bal}</b></td><td>${s.bal < 0 ? chipHtml('bad', '▲ дефіцит') : s.bal > 4 ? chipHtml('warn', '! надлишок') : chipHtml('good', '✓ баланс')}</td></tr>`).join('');
+  let list;
+  if (S.role === 'board' || S.role === 'cfo') list = '<p class="note">Для вашої ролі доступні лише агрегати.</p>';
+  else {
+    const L = b.B.filter(canSee).sort((a, c) => c.benchW - a.benchW).slice(0, 10);
+    list = `<div class="tw"><table><tr><th>Співробітник</th><th>Навичка</th><th>Практика</th><th>Грейд</th><th class="n">На bench, тиж.</th><th class="n">Вартість/міс.</th></tr>${L.map(e => `<tr><td>${esc(e.name)} <span class="note">${e.id}</span></td><td>${e.skill}</td><td>${e.practice}</td><td>${e.grade}</td><td class="n">${nf(e.benchW, 0)}</td><td class="n">${usd(e.salary * 1.15 / 12)}</td></tr>`).join('') || '<tr><td colspan="6" class="note">Немає записів у вашій зоні доступу.</td></tr>'}</table></div>`;
+  }
+  return `<div class="grid tiles">${tiles}</div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Utilization за практиками</h2><div class="cap">Фільтр практики тут не застосовується.</div>${legend(PRACTICES.map((p, i) => ({ n: p, c: PC[i], ln: 1 })))}${lines}</div>
+  <div class="grid" style="align-content:start"><div class="card"><h2>Скільки людей на bench і як довго</h2>${age}<div class="cap" style="margin-top:8px">За грейдами</div>${gr}</div><div class="card"><h2>Roll-off pipeline</h2><div class="cap">Хто звільняється з проєктів найближчим часом</div>${roll}</div></div></div>
+  <div class="card" style="margin-top:12px"><h2>Пропозиція і попит за навичками</h2><div class="cap">Баланс = на bench + roll-off ≤30 днів − відкриті вакансії. Дефіцит: наймаємо ззовні, коли може не вистачати людей; надлишок: платимо за bench.</div><div class="tw"><table><tr><th>Навичка</th><th>Практика</th><th class="n">Bench</th><th class="n">Roll-off 30</th><th class="n">Roll-off 90</th><th class="n">Вакансії</th><th class="n">Баланс</th><th>Статус</th></tr>${sk}</table></div></div>
+  <div class="card" style="margin-top:12px"><h2>Довше за все на bench</h2>${list}</div>`;
+}
+function viewHiring(o) {
+  const k = K - 1, hs = hiringStats(D, filt(), S.period), P = pby();
+  const planW = visK().reduce((a, i) => a + o.hiresPlan[i], 0), factW = visK().reduce((a, i) => a + o.hiresM[i], 0);
+  const tiles = [mini('Відкриті вакансії', o.vacOpen[k], `${usd(o.vacLoss[k])}/міс. недоотриманої виручки`), mini('Time-to-fill', o.ttf[k] == null ? '—' : Math.round(o.ttf[k]) + ' дн.', 'ціль ≤45 дн.', status(o.ttf[k], 45, 55, true)), mini('Offer acceptance', nf(o.acc[k], 0) + '%', 'ціль ≥80% (припущення)', status(o.acc[k], 80, 74, false)), mini('Cost-per-hire', usd(hs.cph), 'середній за період'), mini('Найм за період', hs.hires, `план ${Math.round(planW)} (${hs.hires - Math.round(planW) >= 0 ? '+' : ''}${hs.hires - Math.round(planW)})`, status(100 * factW / (planW || 1), 95, 85, false))].join('');
+  const fn = hs.funnel, fun = hbars(fn.map((x, i) => ({ n: x[0], v: x[1], tip: i ? `<b>${x[0]}</b><div class="tr"><span>Конверсія з попереднього</span><b>${nf(fn[i - 1][1] ? 100 * x[1] / fn[i - 1][1] : null, 0)}%</b></div>` : `<b>${x[0]}</b>` })), 'var(--s1)') ;
+  const ttf = placeChart(el => lineChart(el, { h: 220, fmt: v => Math.round(v) + ' дн.', aria: 'Time-to-fill за практиками', refs: [{ v: 45, n: 'Ціль 45', c: 'var(--good)' }], series: P.map((x, i) => ({ name: PRACTICES[i], color: PC[i], vals: x.ttf })) }));
+  const acc = placeChart(el => lineChart(el, { h: 190, fmt: v => nf(v) + '%', aria: 'Offer acceptance', refs: [{ v: 80, n: 'Ціль 80%', c: 'var(--good)' }], series: [{ name: 'Offer acceptance', color: 'var(--s3)', vals: o.acc, area: true }] }));
+  const hp = placeChart(el => lineChart(el, { h: 190, zero: true, fmt: v => nf(v, 0), aria: 'Найм: факт і план', series: [{ name: 'Факт', color: 'var(--s1)', vals: o.hiresM, area: true }, { name: 'План', color: 'var(--other)', vals: o.hiresPlan, dash: true, w: 1.8 }] }));
+  const src = hs.bySrc.map(s => `<tr><td>${s.n}</td><td class="n">${s.hires}</td><td class="n">${nf(hs.hires ? 100 * s.hires / hs.hires : null, 0)}%</td><td class="n">${usd(s.cph)}</td><td class="n">${nf(s.early, 0)}%</td></tr>`).join('');
+  const bk = [[0, 30, '0–30 днів'], [31, 60, '31–60'], [61, 90, '61–90'], [91, 1e9, 'понад 90']].map(([a, c, n]) => ({ n, v: o.openVacs.filter(v => { const d = (NOW - v.openM) * 30; return d >= a && d <= c; }).length }));
+  const byP = hbars(PRACTICES.map((p, i) => ({ n: p, v: o.openVacs.filter(v => v.pi === i).length })), 'var(--s1)');
+  return `<div class="grid tiles">${tiles}</div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Воронка найму</h2><div class="cap">Оцінка за даними ATS (симуляція) за обраний період. Найбільше падіння — на технічному інтервʼю й оферах.</div>${fun}</div>
+  <div class="card"><h2>Time-to-fill за практиками</h2><div class="cap">Ковзні 3 місяці. Фільтр практики не застосовується.</div>${legend(PRACTICES.map((p, i) => ({ n: p, c: PC[i], ln: 1 })))}${ttf}</div></div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Найм: факт і план</h2><div class="cap">План = приріст headcount + заміна очікуваного відтоку.</div>${legend([{ n: 'Факт', c: 'var(--s1)', ln: 1 }, { n: 'План', c: 'var(--other)', ln: 1 }])}${hp}</div>
+  <div class="card"><h2>Offer acceptance</h2><div class="cap">Падіння acceptance подовжує time-to-fill.</div>${acc}</div></div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Джерела найму</h2><div class="cap">«Ранній відтік» — частка найнятих, які пішли до 12 міс.</div><div class="tw"><table><tr><th>Джерело</th><th class="n">Найм</th><th class="n">Частка</th><th class="n">Cost-per-hire</th><th class="n">Ранній відтік</th></tr>${src}</table></div></div>
+  <div class="card"><h2>Відкриті вакансії</h2><div class="cap">За віком, днів відкритості</div>${hbars(bk, 'var(--s4)')}<div class="cap" style="margin-top:8px">За практиками</div>${byP}</div></div>`;
+}
+function viewPeople(o) {
+  const k = K - 1, es = engagementStats(D, filt()), list = riskList(D, filt());
+  const hi = list.filter(r => r.score >= 45), hiCost = hi.reduce((a, r) => a + r.e.salary * CFG.repl[r.e.grade], 0), en = L(es.enps);
+  const tiles = [mini('eNPS', en == null ? '—' : (en > 0 ? '+' : '') + en, `відповіло ${es.resp} з ${es.n}`, en == null ? 'mute' : status(en, 20, 5, false)), mini('Сер. овертайм', nf(es.avgOt) + ' год/тиж.', `${es.otHigh} осіб понад 6 год`), mini('Без відпустки >9 міс.', es.vacHigh, 'ризик вигорання', status(es.vacHigh / Math.max(1, es.n) * 100, 4, 8, true)), mini('Ризик відходу ≥45', hi.length, `заміна коштує ${usd(hiCost)}`)].join('');
+  const qk = Array.from({ length: 8 }, (_, i) => K - 1 - 3 * (7 - i)), mapQ = a => { const v = new Array(K).fill(null); a.forEach((x, i) => v[qk[i]] = x); return v; };
+  const ql = placeChart(el => lineChart(el, { h: 220, ks: qk, fmt: v => (v > 0 ? '+' : '') + Math.round(v), aria: 'eNPS у динаміці', refs: [{ v: 0, n: '0', c: 'var(--faint)' }], series: [{ name: 'Компанія', color: 'var(--ink)', vals: mapQ(es.enps), w: 3 }, ...es.enpsP.map((a, i) => ({ name: PRACTICES[i], color: PC[i], vals: mapQ(a), w: 1.8 }))] }));
+  const ol = ['до 2 год', '2–6 год', '6–10 год', 'понад 10 год'], vl = ['до 4 міс.', '4–7 міс.', '7–10 міс.', 'понад 10 міс.'];
+  const teams = es.teams.slice(0, 8).map(t => `<tr><td><b>${t.code}</b></td><td>${PRACTICES[t.pi]}</td><td class="n">${t.n}</td><td class="n">${t.enps == null ? '—' : t.enps}</td><td class="n">${nf(t.avgOt)}</td><td class="n">${nf(t.nv, 0)}%</td><td class="n">${t.ex}</td></tr>`).join('');
+  return `<div class="grid tiles">${tiles}</div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>eNPS за кварталами</h2><div class="cap">Падіння у Data / AI і DevOps випереджає відтік Senior і Lead. Фільтр практики не застосовується.</div>${legend([{ n: 'Компанія', c: 'var(--ink)', ln: 1 }, ...PRACTICES.map((p, i) => ({ n: p, c: PC[i], ln: 1 }))])}${ql}</div>
+  <div class="grid" style="align-content:start"><div class="card"><h2>Овертайм</h2><div class="cap">Понад норму, годин на тиждень</div>${hbars(es.ot.map((v, i) => ({ n: ol[i], v })), 'var(--s2)')}</div><div class="card"><h2>Час без відпустки</h2>${hbars(es.vc.map((v, i) => ({ n: vl[i], v })), 'var(--s4)')}</div></div></div>
+  <div class="card" style="margin-top:12px"><h2>Команди з найвищим ризиком</h2><div class="cap">Команди від 6 осіб. Складений індекс: eNPS, овертайм, відпустки, ризик відходу, відтік за 12 міс.</div><div class="tw"><table><tr><th>Команда</th><th>Практика</th><th class="n">Людей</th><th class="n">eNPS</th><th class="n">Овертайм, год</th><th class="n">Без відпустки</th><th class="n">Вийшло за 12 міс.</th></tr>${teams}</table></div></div>
+  <div class="card" style="margin-top:12px"><h2>Ризик відходу</h2>${riskBlock(15)}</div>`;
+}
+
+
+/* ===== Фаза 3: алерти, дайджест, дані ===== */
+function computeAlerts() {
+  const f0 = { p: -1, g: -1, l: -1 }, o = compute(D, f0), k = K - 1, out = [];
+  const add = (sev, title, detail, tab) => out.push({ sev, title, detail, tab });
+  const t = o.turn[k], sl = o.turnSL[k];
+  if (t > ALERT.turn) add('bad', `Turnover LTM ${nf(t)}% вище порогу ${ALERT.turn}%`, `Ціль 15%. Рік тому було ${nf(o.turn[k - 12])}%.`, 'turnover'); else if (t > TARGETS.turnover) add('warn', `Turnover LTM ${nf(t)}% вище цілі 15%`, 'У жовтій зоні.', 'turnover');
+  if (sl > ALERT.sl) add('bad', `Turnover Sr + Lead ${nf(sl)}% вище порогу ${ALERT.sl}%`, `Кожен вихід коштує 100–150% зарплати. Cost of turnover LTM: ${usd(o.ltmCost[k])}.`, 'turnover');
+  const w = windowStats(D, f0, 12), hot = [];
+  w.heat.forEach((r, pi) => r.forEach((c, gi) => { if (gi >= 2 && c.rate != null && c.hc >= 12 && c.rate > 25) hot.push({ pi, gi, ...c }); }));
+  hot.sort((a, b) => b.rate - a.rate).slice(0, 3).forEach(h => add('bad', `${PRACTICES[h.pi]} · ${GRADES[h.gi]}: відтік ${nf(h.rate, 0)}% річних`, `${h.n} звільнень із ${h.hc} за 12 міс.`, 'turnover'));
+  if (o.bench[k] > ALERT.bench) add('bad', `Bench ${nf(o.bench[k])}% вище порогу ${ALERT.bench}%`, `${o.benchN[k]} осіб, ${usd(o.benchCost[k])} на місяць.`, 'bench'); else if (o.bench[k] > TARGETS.bench) add('warn', `Bench ${nf(o.bench[k])}% вище цілі 8%`, `${usd(o.benchCost[k])} на місяць.`, 'bench');
+  if (o.util[k] < ALERT.util) add('warn', `Utilization ${nf(o.util[k])}% нижче порогу ${ALERT.util}%`, 'Ціль 75%.', 'bench');
+  if (o.ttf[k] > ALERT.ttf) add('bad', `Time-to-fill ${Math.round(o.ttf[k])} дн. вище порогу ${ALERT.ttf}`, `${o.vacOpen[k]} відкритих вакансій, ${usd(o.vacLoss[k])} недоотриманої виручки на місяць.`, 'hiring');
+  if (o.acc[k] < ALERT.acc) add('bad', `Offer acceptance ${nf(o.acc[k], 0)}% нижче порогу ${ALERT.acc}%`, 'Кандидати відмовляються від оферів: перевірте вилку компенсації.', 'hiring');
+  const old = o.openVacs.filter(v => (NOW - v.openM) * 30 > ALERT.vacAge).length; if (old) add('warn', `Вакансій, відкритих понад ${ALERT.vacAge} днів: ${old}`, 'Перегляньте вимоги й канали пошуку.', 'hiring');
+  const es = engagementStats(D, f0), en = L(es.enps), pv = es.enps[6];
+  if (en != null && en < ALERT.enps) add('warn', `eNPS ${en > 0 ? '+' : ''}${en} нижче порогу ${ALERT.enps}`, pv != null ? `Минулого кварталу було ${pv > 0 ? '+' : ''}${pv}.` : '', 'people');
+  if (en != null && pv != null && pv - en >= 10) add('bad', `eNPS впав на ${pv - en} пунктів за квартал`, 'Ранній сигнал майбутнього відтоку.', 'people');
+  const hi = riskList(D, f0).filter(r => r.score >= 45).length; if (hi > ALERT.risk) add('warn', `${hi} співробітників Sr/Lead із високим ризиком відходу`, 'Потрібні stay-інтервʼю.', 'people');
+  return out.sort((a, b) => (a.sev === 'bad' ? 0 : 1) - (b.sev === 'bad' ? 0 : 1));
+}
+function buildDigest(al) {
+  const f0 = { p: -1, g: -1, l: -1 }, o = compute(D, f0), k = K - 1, y = k - 12, w = windowStats(D, f0, 12);
+  const sg = x => (x > 0 ? '+' : x < 0 ? '−' : '') + nf(Math.abs(x));
+  const ev = S.feed.length, ex = S.feed.filter(e => e.type === 'exit').length, hr = S.feed.filter(e => e.type === 'hire').length;
+  const lines = [`People & P&L: тижневий дайджест, ${new Date().toLocaleDateString('uk-UA')}`, '', 'КЛЮЧОВІ ПОКАЗНИКИ',
+    `• Headcount ${o.hc[k]} (план ${Math.round(o.plan[k])}), р/р ${o.hc[k] - o.hc[y] >= 0 ? '+' : '−'}${Math.abs(o.hc[k] - o.hc[y])}`,
+    `• Turnover LTM ${nf(o.turn[k])}% (ціль 15%), р/р ${sg(o.turn[k] - o.turn[y])} п.п.; Sr+Lead ${nf(o.turnSL[k])}%; regretted ${nf(o.turnReg[k])}%`,
+    `• Cost of turnover LTM ${usd(o.ltmCost[k])}`,
+    `• Utilization ${nf(o.util[k])}% (ціль 75%), bench ${nf(o.bench[k])}% (${o.benchN[k]} осіб, ${usd(o.benchCost[k])}/міс.)`,
+    `• Time-to-fill ${Math.round(o.ttf[k])} дн., відкрито ${o.vacOpen[k]} вакансій (${usd(o.vacLoss[k])}/міс. недоотриманої виручки), offer acceptance ${nf(o.acc[k], 0)}%`];
+  if (ev) lines.push(`• За цю сесію: ${ex} звільнень, ${hr} виходів на роботу, ${ev} подій загалом`);
+  lines.push('', `АЛЕРТИ (${al.length})`); al.slice(0, 8).forEach(a => lines.push(`${a.sev === 'bad' ? '▲' : '!'} ${a.title}`)); if (!al.length) lines.push('Немає активних алертів.');
+  const b = benchStats(D, f0), acts = [];
+  const long = b.ageB[2].length; if (long) acts.push(`Провести ресурсне рев'ю для ${long} осіб, які на bench понад 4 тижні (${usd(b.ageCost[2])}/міс.).`);
+  const hi = riskList(D, f0).filter(r => r.score >= 45).length; if (hi) acts.push(`Запланувати stay-інтервʼю з ${hi} співробітниками Sr/Lead із високим ризиком відходу.`);
+  let best = null; w.heat.forEach((r, pi) => r.forEach((c, gi) => { if (gi >= 2 && c.rate != null && c.hc >= 12 && (!best || c.rate > best.rate)) best = { ...c, pi, gi }; }));
+  if (best) acts.push(`Переглянути компенсацію та кар'єрні треки: ${PRACTICES[best.pi]} · ${GRADES[best.gi]} (відтік ${nf(best.rate, 0)}%).`);
+  if (o.acc[k] < ALERT.acc) acts.push('Звірити вилки з ринком: acceptance оферів нижче порогу.');
+  const def = b.skills.filter(s => s.bal < 0).slice(0, 3).map(s => s.skill); if (def) acts.push(def.length ? `Дефіцит навичок: ${def.join(', ')}. Прискорити найм або внутрішнє навчання.` : '');
+  lines.push('', 'РЕКОМЕНДОВАНІ ДІЇ'); acts.filter(Boolean).forEach((a, i) => lines.push(`${i + 1}. ${a}`));
+  lines.push('', S_DATA_NOTE());
+  return lines.join('\n');
+}
+const S_DATA_NOTE = () => D.synthetic ? 'Дані: синтетичні (прототип).' : `Дані: HRIS CSV «${D.source.name}», ${D.source.rows} рядків; вакансії синтетичні.`;
+function viewAlerts() {
+  const al = computeAlerts(), dg = buildDigest(al);
+  const list = al.map(a => `<li><span class="ic ${a.sev}">${a.sev === 'bad' ? '▲' : '!'}</span><span><b>${a.title}</b><div class="note">${a.detail} <a href="#${a.tab}" data-go="${a.tab}" style="color:var(--s1)">Відкрити</a></div></span></li>`).join('');
+  const fld = (key, label, unit) => `<label class="sl" style="grid-template-columns:1fr 110px"><span>${label}</span><span style="white-space:nowrap"><input class="num" type="number" step="1" data-alert="${key}" value="${ALERT[key]}"> ${unit}</span></label>`;
+  return `<div class="grid row2e"><div class="card"><div class="card-h"><h2>Активні алерти</h2><span class="chip ${al.some(a => a.sev === 'bad') ? 'bad' : al.length ? 'warn' : 'good'}">${al.length}</span></div><div class="cap">За всією компанією, без урахування фільтрів.</div>${al.length ? `<ul class="ins">${list}</ul>` : '<p class="note">Усі показники в нормі.</p>'}</div>
+  <div class="card"><h2>Пороги алертів</h2><div class="cap">Зберігаються у цьому браузері. Червоний алерт спрацьовує вище порогу.</div>
+  ${fld('turn', 'Turnover LTM, вище', '%')}${fld('sl', 'Turnover Sr + Lead, вище', '%')}${fld('bench', 'Bench, вище', '%')}${fld('util', 'Utilization, нижче', '%')}${fld('ttf', 'Time-to-fill, вище', 'дн.')}${fld('acc', 'Offer acceptance, нижче', '%')}${fld('enps', 'eNPS, нижче', '')}${fld('risk', 'Людей із високим ризиком, більше', '')}${fld('vacAge', 'Вакансія відкрита, понад', 'дн.')}</div></div>
+  <div class="card" style="margin-top:12px"><div class="card-h"><h2>Тижневий дайджест</h2><button class="pill" data-act="copy" data-target="digest">Копіювати</button></div><div class="cap">Готовий текст для e-mail чи Slack. Генерується з поточних даних, автоматичної розсилки в цьому прототипі немає.</div><textarea id="digest" readonly rows="18" style="width:100%;font:13px/1.5 var(--font);background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical">${esc(dg).replace(/&quot;/g, '"')}</textarea></div>`;
+}
+const CONTRACT = [
+  ['HRIS', 'employee_id, practice, grade, location, hire_date, salary; опційно term_date, term_type, term_reason, performance, skill, team, source', 'щодня', 'CSV-імпорт працює'],
+  ['PSA / Jira / Tempo', 'employee_id, month, billable_hours, available_hours, project_end_date', 'щодня', 'потрібен бекенд'],
+  ['Finance', 'month, practice, revenue, payroll, overhead', 'щомісяця', 'потрібен бекенд'],
+  ['ATS', 'vacancy_id, practice, grade, skill, open_date, close_date, source, candidate_stage', 'щодня', 'потрібен бекенд'],
+  ['Опитування eNPS', 'employee_id, quarter, score (0–10)', 'щокварталу', 'потрібен бекенд']
+];
+const TEMPLATE = 'employee_id,name,practice,grade,location,hire_date,salary,term_date,term_type,term_reason,performance,skill,team,source,utilization,bench\nE-1001,Олена Коваленко,Engineering,Sr,Київ,2021-03-15,56000,,,,4,Java,7,Referral,85,0\nE-1002,Андрій Мороз,QA,Mid,Львів,2022-06-01,31000,2026-08-20,vol,Компенсація,3,Test Automation,3,LinkedIn,80,0\nE-1003,Марія Бондаренко,Data / AI,Lead,Remote (світ),2020-01-10,78000,,,,5,ML Engineer,2,Career-сайт,70,1';
+function viewData() {
+  const rep = S.report ? `<div class="note" style="margin-top:8px"><b>${S.report.ok ? '✓ Імпортовано' : '▲ Не імпортовано'}.</b> ${S.report.ok ? `${S.report.emps.length} співробітників із ${S.report.total} рядків (активних ${S.report.active}).` : ''}${S.report.errs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + S.report.errs.slice(0, 6).map(e => `<li>${esc(e)}</li>`).join('') + (S.report.errs.length > 6 ? `<li>…ще ${S.report.errs.length - 6}</li>` : '') + '</ul>' : ''}</div>` : '';
+  const rows = CONTRACT.map(c => `<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[0] === 'HRIS' && !D.synthetic ? chipHtml('good', '✓ ' + esc(D.source.name)) : chipHtml(c[3] === 'CSV-імпорт працює' ? 'warn' : 'mute', c[0] === 'HRIS' ? 'синтетичні · ' + c[3] : 'синтетичні · ' + c[3])}</td></tr>`).join('');
+  return `<div class="card"><h2>Джерела даних</h2><div class="cap">Зараз: ${D.synthetic ? 'усі дані синтетичні' : 'співробітники з вашого CSV, решта синтетична'}. Сторінка не може звертатися до зовнішніх API, тому живі підключення потребують невеликого бекенду.</div><div class="tw"><table><tr><th>Джерело</th><th>Поля</th><th>Оновлення</th><th>Статус</th></tr>${rows}</table></div></div>
+  <div class="grid row2e" style="margin-top:12px"><div class="card"><h2>Імпорт з HRIS (CSV)</h2><div class="cap">Файл лишається у вашому браузері й нікуди не надсилається. Дати у форматі РРРР-ММ-ДД. Практики й грейди: ${PRACTICES.join(', ')} / ${GRADES.join(', ')}.</div>
+  <input type="file" id="csv-file" accept=".csv,.tsv,.txt" style="margin:6px 0"><div class="cap" style="margin-top:6px">або вставте вміст CSV:</div><textarea id="csv-paste" rows="5" style="width:100%;font:12px/1.4 ui-monospace,monospace;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px" placeholder="employee_id,practice,grade,..."></textarea>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="pill" data-act="import-paste">Імпортувати</button><button class="pill" data-act="reset-data" ${D.synthetic ? 'disabled style="opacity:.5"' : ''}>Повернути синтетичні дані</button></div>${rep}
+  <div class="note" style="margin-top:8px">Після імпорту live-симуляція вимикається. Utilization і bench беруться з колонок utilization та bench (історії немає, поки не підключено PSA). Опитування й вакансії лишаються синтетичними.</div></div>
+  <div class="card"><div class="card-h"><h2>Шаблон CSV</h2><button class="pill" data-act="copy" data-target="tpl">Копіювати</button></div><textarea id="tpl" readonly rows="8" style="width:100%;font:12px/1.4 ui-monospace,monospace;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;white-space:pre">${esc(TEMPLATE)}</textarea>
+  <div class="cap" style="margin-top:10px"><b>Шлях до продакшену.</b> Нічний ETL із HRIS, PSA, Finance, ATS у сховище → знімок JSON → цей дашборд. Для персональних даних потрібні SSO і рольовий доступ на сервері, а не лише в інтерфейсі.</div></div></div>`;
+}
+function applyImport(text, name) {
+  const r = importEmployees(text); S.report = r;
+  if (r.ok) { D = { emps: r.emps, vacs: D.vacs, synthetic: false, source: { name, rows: r.total, at: Date.now() } }; S.live = false; S.feed = []; }
+  render();
+}
+
+/* --- рендер --- */
+const pby = () => PB || (PB = PRACTICES.map((_, pi) => compute(D, { p: pi, g: S.g, l: S.l })));
+function render() {
+  PENDING = []; HOV = {}; PB = null;
+  O = compute(D, filt());
+  const w = windowStats(D, filt(), S.period);
+  const html = ({ executive: () => viewExecutive(O, w), turnover: () => viewTurnover(O, w), cost: () => viewCost(O), bench: () => viewBench(O), hiring: () => viewHiring(O), people: () => viewPeople(O), alerts: () => viewAlerts(), data: () => viewData() })[S.tab]();
+  $('#view').innerHTML = html;
+  drawCharts(); updateBar();
+}
+function drawCharts() { PENDING.forEach(p => { const el = document.getElementById(p.id); if (el) p.fn(el); }); }
+function updateBar() {
+  try { const n = computeAlerts(); const b = $('#alerts-btn'); b.textContent = 'Алерти ' + n.length; b.className = 'pill' + (n.some(a => a.sev === 'bad') ? ' alarm' : ''); } catch (e) { }
+  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === S.tab));
+  document.querySelectorAll('[data-period]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.period === S.period));
+  $('#f-p').value = S.p; $('#f-g').value = S.g; $('#f-l').value = S.l;
+  $('#reset').hidden = S.p < 0 && S.g < 0 && S.l < 0;
+  $('#live').classList.toggle('on', S.live); $('#live-t').textContent = S.live ? 'Live' : 'Пауза';
+  $('#dirp').hidden = S.role !== 'dir';
+  $('#upd').textContent = 'оновлено ' + Math.max(0, Math.round((Date.now() - S.lastUpdate) / 1000)) + ' с тому';
+}
+function init() {
+  const opt = (arr, all) => `<option value="-1">${all}</option>` + arr.map((x, i) => `<option value="${i}">${x}</option>`).join('');
+  $('#f-p').innerHTML = opt(PRACTICES, 'Усі практики'); $('#f-g').innerHTML = opt(GRADES, 'Усі грейди'); $('#f-l').innerHTML = opt(LOCS, 'Усі локації'); $('#dirp').innerHTML = PRACTICES.map((x, i) => `<option value="${i}">${x}</option>`).join('');
+  $('#f-p').onchange = e => { S.p = +e.target.value; render(); }; $('#f-g').onchange = e => { S.g = +e.target.value; render(); }; $('#f-l').onchange = e => { S.l = +e.target.value; render(); };
+  $('#reset').onclick = () => { S.p = S.g = S.l = -1; render(); };
+  $('#role').onchange = e => { S.role = e.target.value; render(); }; $('#dirp').onchange = e => { S.dirP = +e.target.value; render(); };
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => { S.tab = t.dataset.tab; location.hash = S.tab; render(); });
+  document.querySelectorAll('[data-period]').forEach(b => b.onclick = () => { S.period = +b.dataset.period; render(); });
+  $('#live').onclick = () => { S.live = !S.live; updateBar(); };
+  $('#alerts-btn').onclick = () => { S.tab = 'alerts'; location.hash = 'alerts'; render(); };
+  $('#view').addEventListener('change', e => { if (e.target.id === 'csv-file' && e.target.files[0]) { const f = e.target.files[0], rd = new FileReader(); rd.onload = () => applyImport(String(rd.result), f.name); rd.readAsText(f); } });
+  $('#view').addEventListener('click', e => {
+    const go = e.target.closest('[data-go]'); if (go) { e.preventDefault(); S.tab = go.dataset.go; location.hash = S.tab; render(); return; }
+    const ac = e.target.closest('[data-act]');
+    if (ac) {
+      const a = ac.dataset.act;
+      if (a === 'copy') { const t = document.getElementById(ac.dataset.target); t.select(); try { navigator.clipboard.writeText(t.value).then(() => { ac.textContent = 'Скопійовано'; }, () => { ac.textContent = 'Виділено, натисніть Ctrl+C'; }); } catch (er) { ac.textContent = 'Виділено, натисніть Ctrl+C'; } }
+      else if (a === 'import-paste') { const v = document.getElementById('csv-paste').value; if (v.trim()) applyImport(v, 'вставлений CSV'); }
+      else if (a === 'reset-data') { D = generate(7); S.report = null; S.live = true; render(); }
+      return;
+    }
+    const h = e.target.closest('[data-heat]'); if (h) { const [p, g] = h.dataset.heat.split(',').map(Number); if (S.p === p && S.g === g) S.p = S.g = -1; else { S.p = p; S.g = g; } render(); }
+  });
+  $('#view').addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.alert) { ALERT[t.dataset.alert] = +t.value; saveAlerts(); updateBar(); return; }
+    if (t.id && t.id.startsWith('wi-')) { S.wi[t.id.slice(3)] = +t.value; const y = window.scrollY; render(); window.scrollTo(0, y); const n = document.getElementById(t.id); if (n) n.focus(); }
+    else if (t.dataset.repl) { CFG.repl[t.dataset.repl] = Math.max(0, +t.value) / 100; const g = t.dataset.repl, y = window.scrollY; render(); window.scrollTo(0, y); const n = document.querySelector(`[data-repl="${g}"]`); if (n) { n.focus(); n.setSelectionRange && 0; } }
+  });
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawCharts, 120); });
+  addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h) && h !== S.tab) { S.tab = h; render(); } });
+  const h0 = location.hash.slice(1); if (TABS.includes(h0)) S.tab = h0;
+  render();
+  setInterval(() => { if (S.live && D.synthetic) { const ev = liveEvent(D); if (ev.sub !== '' || ev.text !== 'Без змін') { ev.t = Date.now(); S.feed.unshift(ev); S.feed = S.feed.slice(0, 12); S.lastUpdate = Date.now(); const y = window.scrollY, ae = document.activeElement; if (!(ae && ae.tagName === 'INPUT')) { render(); window.scrollTo(0, y); } } } }, 3800);
+  setInterval(() => { updateBar(); const f = document.querySelector('.feed'); if (f && S.feed.length) f.outerHTML = feedHtml(); }, 1000);
+}
+init();
+
+</script>
+
+</body>
+</html>
